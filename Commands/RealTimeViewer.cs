@@ -36,7 +36,7 @@ namespace BaseballCli.Commands
                 [bold cyan]{awayTeam.Name} @ {homeTeam.Name}[/]
                 [dim]{gameDate:yyyy-MM-dd}[/]
                 """);
-            header.BorderColor(Color.Cyan);
+            header.BorderColor(Color.Cyan1);
             AnsiConsole.Write(header);
             AnsiConsole.WriteLine();
         }
@@ -105,10 +105,10 @@ namespace BaseballCli.Commands
 
         public void DisplayGameEnd(Game game, Team homeTeam, Team awayTeam)
         {
-            var winner = game.HomeTeamScore > game.AwayTeamScore ? homeTeam : awayTeam;
-            var loser = game.HomeTeamScore > game.AwayTeamScore ? awayTeam : homeTeam;
-            var winScore = game.HomeTeamScore > game.AwayTeamScore ? game.HomeTeamScore : game.AwayTeamScore;
-            var loseScore = game.HomeTeamScore > game.AwayTeamScore ? game.AwayTeamScore : game.HomeTeamScore;
+            var winner = game.HomeScore > game.AwayScore ? homeTeam : awayTeam;
+            var loser = game.HomeScore > game.AwayScore ? awayTeam : homeTeam;
+            var winScore = game.HomeScore > game.AwayScore ? game.HomeScore : game.AwayScore;
+            var loseScore = game.HomeScore > game.AwayScore ? game.AwayScore : game.HomeScore;
 
             AnsiConsole.WriteLine();
             var footer = new Panel($"""
@@ -116,7 +116,7 @@ namespace BaseballCli.Commands
                 
                 [bold]{winner.Name}[/] [green]{winScore}[/], [bold]{loser.Name}[/] [red]{loseScore}[/]
                 """);
-            footer.BorderColor(Color.Green);
+            footer.BorderColor(Color.Green1);
             AnsiConsole.Write(footer);
         }
 

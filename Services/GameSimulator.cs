@@ -234,23 +234,23 @@ namespace BaseballCli.Services
             {
                 case "CaughtStealing":
                     // Remove runner attempting to steal
-                    if (bases.First)
+                    if (bases.First ?? false)
                         bases.First = false;
                     break;
 
                 case "DoublePlaying":
                     // Remove two runners
                     bases.First = false;
-                    if (bases.Second)
+                    if (bases.Second ?? false)
                         bases.Second = false;
                     break;
 
                 case "WildPitch":
                     // Advance bases by one
-                    if (bases.Third)
-                        bases.Third = bases.Second != null;
-                    if (bases.Second)
-                        bases.Second = bases.First != null;
+                    if (bases.Third ?? false)
+                        bases.Third = bases.Second ?? false;
+                    if (bases.Second ?? false)
+                        bases.Second = bases.First ?? false;
                     break;
             }
         }

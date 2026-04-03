@@ -45,19 +45,19 @@ namespace BaseballCli.Database
             modelBuilder.Entity<League>()
                 .HasMany(l => l.Teams)
                 .WithOne(t => t.League)
-                .HasForeignKey(t => t.LeagueId)
+                .HasForeignKey(t => t.Id)
                 .OnDelete(DeleteBehavior.Cascade);
 
             // Team configuration
             modelBuilder.Entity<Team>()
                 .HasKey(t => t.Id);
             modelBuilder.Entity<Team>()
-                .HasIndex(t => new { t.LeagueId, t.Name })
+                .HasIndex(t => new { t.Id, t.Name })
                 .IsUnique();
             modelBuilder.Entity<Team>()
                 .HasMany(t => t.Players)
                 .WithOne(p => p.Team)
-                .HasForeignKey(p => p.TeamId)
+                .HasForeignKey(p => p.Id)
                 .OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<Team>()
                 .HasMany(t => t.HomeGames)
@@ -74,7 +74,7 @@ namespace BaseballCli.Database
             modelBuilder.Entity<Player>()
                 .HasKey(p => p.Id);
             modelBuilder.Entity<Player>()
-                .HasIndex(p => new { p.TeamId, p.Name })
+                .HasIndex(p => new { p.Id, p.Name })
                 .IsUnique();
             modelBuilder.Entity<Player>()
                 .HasMany(p => p.SeasonStats)
@@ -118,7 +118,7 @@ namespace BaseballCli.Database
             modelBuilder.Entity<TeamStats>()
                 .HasKey(t => t.Id);
             modelBuilder.Entity<TeamStats>()
-                .HasIndex(t => new { t.TeamId, t.Season })
+                .HasIndex(t => new { t.Id, t.Season })
                 .IsUnique();
         }
 
@@ -137,6 +137,46 @@ namespace BaseballCli.Database
         {
             Database.EnsureDeleted();
             Database.EnsureCreated();
+        }
+
+        // Query methods for various entities
+        public List<Game> GetGamesByLeague(string leagueId)
+        {
+            return Games
+                .Where(g => g.Id == leagueId)
+                .Include(g => g.HomeTeam)
+                .Include(g => g.AwayTeam)
+                .Include(g => g.Plays)
+                .OrderBy(g => g.GameDate)
+                .ToList();
+        }
+
+        public List<Team> GetTeamsByLeague(string leagueId)
+        {
+            return Teams
+                .Where(t => t.Id == leagueId)
+                .Include(t => t.Players)
+                .OrderBy(t => t.Name)
+                .ToList();
+        }
+
+        public List<Player> GetPlayersByTeam(string teamId)
+        {
+            return Players
+                .Where(p => p.Id == teamId)
+                .OrderBy(p => p.Name)
+                .ToList();
+        }
+
+        public List<Play> GetPlaysByPlayer(string playerId)
+        {
+            return Plays
+                .Where(p => p.BatterId == playerId || p.PitcherId == playerId)
+                .Include(p => p.Game)
+                .Include(p => p.Batter)
+                .Include(p => p.Pitcher)
+                .OrderBy(p => p.Game.GameDate)
+                .ToList();
         }
     }
 
@@ -196,7 +236,7 @@ namespace BaseballCli.Database
         public List<Team> GetTeamsByLeague(string leagueId)
         {
             return _context.Teams
-                .Where(t => t.LeagueId == leagueId)
+                .Where(t => t.Id == leagueId)
                 .Include(t => t.Players)
                 .ToList();
         }
@@ -218,7 +258,7 @@ namespace BaseballCli.Database
         public List<Player> GetPlayersByTeam(string teamId)
         {
             return _context.Players
-                .Where(p => p.TeamId == teamId)
+                .Where(p => p.Id == teamId)
                 .ToList();
         }
 
@@ -241,7 +281,7 @@ namespace BaseballCli.Database
         public List<Game> GetGamesByDate(DateTime date, string leagueId)
         {
             return _context.Games
-                .Where(g => g.GameDate.Date == date.Date && g.LeagueId == leagueId)
+                .Where(g => g.GameDate.Date == date.Date && g.Id == leagueId)
                 .Include(g => g.HomeTeam)
                 .Include(g => g.AwayTeam)
                 .ToList();
@@ -302,7 +342,7 @@ namespace BaseballCli.Database
         public List<SeasonStats> GetSeasonStatsByTeam(string teamId, int season)
         {
             return _context.SeasonStats
-                .Where(s => s.TeamId == teamId && s.Season == season)
+                .Where(s => s.Id == teamId && s.Season == season)
                 .Include(s => s.Player)
                 .OrderByDescending(s => s.BattingAverage)
                 .ToList();
@@ -312,7 +352,7 @@ namespace BaseballCli.Database
         public void AddOrUpdateTeamStats(TeamStats stats)
         {
             var existing = _context.TeamStats
-                .FirstOrDefault(s => s.TeamId == stats.TeamId && s.Season == stats.Season);
+                .FirstOrDefault(s => s.Id == stats.Id && s.Season == stats.Season);
 
             if (existing != null)
             {
@@ -329,22 +369,44 @@ namespace BaseballCli.Database
         public TeamStats? GetTeamStats(string teamId, int season)
         {
             return _context.TeamStats
-                .FirstOrDefault(s => s.TeamId == teamId && s.Season == season);
+                .FirstOrDefault(s => s.Id == teamId && s.Season == season);
         }
 
         public List<TeamStats> GetLeagueStandings(string leagueId, int season)
         {
             var teamIds = _context.Teams
-                .Where(t => t.LeagueId == leagueId)
+                .Where(t => t.Id == leagueId)
                 .Select(t => t.Id)
                 .ToList();
 
             return _context.TeamStats
-                .Where(s => teamIds.Contains(s.TeamId) && s.Season == season)
+                .Where(s => teamIds.Contains(s.Id) && s.Season == season)
                 .Include(s => s.Team)
                 .OrderByDescending(s => s.Wins)
                 .ThenBy(s => s.Losses)
                 .ThenByDescending(s => s.WinPercentage)
+                .ToList();
+        }
+
+        public List<Game> GetGamesByLeague(string leagueId)
+        {
+            return _context.Games
+                .Where(g => g.Id == leagueId)
+                .Include(g => g.HomeTeam)
+                .Include(g => g.AwayTeam)
+                .Include(g => g.Plays)
+                .OrderBy(g => g.GameDate)
+                .ToList();
+        }
+
+        public List<Play> GetPlaysByPlayer(string playerId)
+        {
+            return _context.Plays
+                .Where(p => p.BatterId == playerId || p.PitcherId == playerId)
+                .Include(p => p.Game)
+                .Include(p => p.Batter)
+                .Include(p => p.Pitcher)
+                .OrderBy(p => p.Game.GameDate)
                 .ToList();
         }
 

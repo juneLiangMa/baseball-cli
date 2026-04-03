@@ -104,11 +104,11 @@ namespace BaseballCli.Services
 
             foreach (var game in games)
             {
-                avgHomeScore += game.HomeTeamScore;
-                avgAwayScore += game.AwayTeamScore;
+                avgHomeScore += game.HomeScore;
+                avgAwayScore += game.AwayScore;
 
                 // Extreme score check (realistic baseball games rarely exceed 15 runs)
-                if (game.HomeTeamScore > 20 || game.AwayTeamScore > 20)
+                if (game.HomeScore > 20 || game.AwayScore > 20)
                 {
                     extremeScores++;
                 }
@@ -148,7 +148,7 @@ namespace BaseballCli.Services
             int homeWins = 0;
             foreach (var game in games)
             {
-                if (game.HomeTeamScore > game.AwayTeamScore)
+                if (game.HomeScore > game.AwayScore)
                     homeWins++;
             }
 
@@ -256,7 +256,7 @@ namespace BaseballCli.Services
             if (game.HomeTeam == null || game.AwayTeam == null)
                 return false;
 
-            if (game.HomeTeam.TeamId == game.AwayTeam.TeamId)
+            if (game.HomeTeam.Id == game.AwayTeam.Id)
                 return false; // Teams can't play themselves
 
             if (game.HomeTeam.Players.Count < 9 || game.AwayTeam.Players.Count < 9)

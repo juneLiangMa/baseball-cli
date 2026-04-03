@@ -25,7 +25,7 @@ namespace BaseballCli.Commands
 
         public void DisplayLeagueSchedule(League league, DateTime? specificDate = null)
         {
-            var games = _repository.GetGamesByLeague(league.LeagueId);
+            var games = _repository.GetGamesByLeague(league.Id);
 
             if (specificDate.HasValue)
             {
@@ -57,11 +57,11 @@ namespace BaseballCli.Commands
             {
                 var status = game.IsCompleted ? "Final" : "Scheduled";
                 var result = game.IsCompleted
-                    ? $"{game.AwayTeamScore}-{game.HomeTeamScore}"
+                    ? $"{game.AwayScore}-{game.HomeScore}"
                     : "—";
 
                 var resultColor = game.IsCompleted
-                    ? (game.HomeTeamScore > game.AwayTeamScore ? "[green]" : "[red]")
+                    ? (game.HomeScore > game.AwayScore ? "[green]" : "[red]")
                     : "[yellow]";
 
                 table.AddRow(
@@ -84,12 +84,12 @@ namespace BaseballCli.Commands
                 return;
             }
 
-            var winner = game.HomeTeamScore > game.AwayTeamScore ? game.HomeTeam : game.AwayTeam;
-            var loser = game.HomeTeamScore > game.AwayTeamScore ? game.AwayTeam : game.HomeTeam;
+            var winner = game.HomeScore > game.AwayScore ? game.HomeTeam : game.AwayTeam;
+            var loser = game.HomeScore > game.AwayScore ? game.AwayTeam : game.HomeTeam;
 
             AnsiConsole.MarkupLine($"[bold cyan]{game.AwayTeam?.Name} @ {game.HomeTeam?.Name}[/]");
             AnsiConsole.MarkupLine($"[yellow]Date:[/] {game.GameDate:yyyy-MM-dd}");
-            AnsiConsole.MarkupLine($"[yellow]Result:[/] {winner?.Name} won {Math.Max(game.HomeTeamScore, game.AwayTeamScore)}-{Math.Min(game.HomeTeamScore, game.AwayTeamScore)}");
+            AnsiConsole.MarkupLine($"[yellow]Result:[/] {winner?.Name} won {Math.Max(game.HomeScore, game.AwayScore)}-{Math.Min(game.HomeScore, game.AwayScore)}");
             AnsiConsole.WriteLine();
 
             // Get plays for this game
@@ -174,12 +174,12 @@ namespace BaseballCli.Commands
             AnsiConsole.Write(table);
 
             AnsiConsole.WriteLine();
-            AnsiConsole.MarkupLine($"[bold]Final: {game.AwayTeam?.Name} {game.AwayTeamScore}, {game.HomeTeam?.Name} {game.HomeTeamScore}[/]");
+            AnsiConsole.MarkupLine($"[bold]Final: {game.AwayTeam?.Name} {game.AwayScore}, {game.HomeTeam?.Name} {game.HomeScore}[/]");
         }
 
         public void DisplayTeamGameLog(Team team, int limit = 10)
         {
-            var games = _repository.GetGamesByTeam(team.TeamId)
+            var games = _repository.GetGamesByTeam(team.Id)
                 .Where(g => g.IsCompleted)
                 .OrderByDescending(g => g.GameDate)
                 .Take(limit)
@@ -201,9 +201,9 @@ namespace BaseballCli.Commands
 
             foreach (var game in games)
             {
-                var opponent = game.HomeTeam?.TeamId == team.TeamId ? game.AwayTeam : game.HomeTeam;
-                var teamScore = game.HomeTeam?.TeamId == team.TeamId ? game.HomeTeamScore : game.AwayTeamScore;
-                var oppScore = game.HomeTeam?.TeamId == team.TeamId ? game.AwayTeamScore : game.HomeTeamScore;
+                var opponent = game.HomeTeam?.Id == team.Id ? game.AwayTeam : game.HomeTeam;
+                var teamScore = game.HomeTeam?.Id == team.Id ? game.HomeScore : game.AwayScore;
+                var oppScore = game.HomeTeam?.Id == team.Id ? game.AwayScore : game.HomeScore;
 
                 var result = teamScore > oppScore ? "[green]W[/]" : "[red]L[/]";
                 var resultStr = teamScore > oppScore ? "W" : "L";
@@ -221,7 +221,7 @@ namespace BaseballCli.Commands
 
         public void DisplayPlayerGameLog(Player player, int limit = 10)
         {
-            var plays = _repository.GetPlaysByPlayer(player.PlayerId)
+            var plays = _repository.GetPlaysByPlayer(player.Id)
                 .GroupBy(p => p.GameId)
                 .OrderByDescending(g => g.First().Game?.GameDate)
                 .Take(limit)
@@ -246,7 +246,7 @@ namespace BaseballCli.Commands
             foreach (var gameGroup in plays)
             {
                 var game = gameGroup.First().Game;
-                var opponent = game?.HomeTeam?.TeamId == player.SeasonStats?.TeamId ? game?.AwayTeam : game?.HomeTeam;
+                var opponent = game?.HomeTeam?.Id == player.Id ? game?.AwayTeam : game?.HomeTeam;
 
                 // Count stats from plays
                 var atBats = gameGroup.Count(p => new[] { "Hit", "Out", "Strikeout", "Groundout" }.Contains(p.EventType));
@@ -292,26 +292,33 @@ namespace BaseballCli.Commands
             table.AddColumn(player1.Name);
             table.AddColumn(player2.Name);
 
+            var stats1 = player1.SeasonStats?.OrderByDescending(s => s.Season).FirstOrDefault();
+            var stats2 = player2.SeasonStats?.OrderByDescending(s => s.Season).FirstOrDefault();
+
             if (player1.Position != "P" && player2.Position != "P")
             {
                 // Batting comparison
                 table.AddRow("Position", player1.Position, player2.Position);
-                table.AddRow("G", player1.SeasonStats?.GamesPlayed.ToString() ?? "0", player2.SeasonStats?.GamesPlayed.ToString() ?? "0");
-                table.AddRow("AB", player1.SeasonStats?.AtBats.ToString() ?? "0", player2.SeasonStats?.AtBats.ToString() ?? "0");
-                table.AddRow("H", player1.SeasonStats?.Hits.ToString() ?? "0", player2.SeasonStats?.Hits.ToString() ?? "0");
-                table.AddRow("AVG", (player1.SeasonStats?.BattingAverage ?? 0).ToString("F3"), (player2.SeasonStats?.BattingAverage ?? 0).ToString("F3"));
-                table.AddRow("HR", player1.SeasonStats?.HomeRuns.ToString() ?? "0", player2.SeasonStats?.HomeRuns.ToString() ?? "0");
-                table.AddRow("RBI", player1.SeasonStats?.RunsBattedIn.ToString() ?? "0", player2.SeasonStats?.RunsBattedIn.ToString() ?? "0");
+                table.AddRow("G", stats1?.GamesPlayed.ToString() ?? "0", stats2?.GamesPlayed.ToString() ?? "0");
+                table.AddRow("AB", stats1?.AtBats.ToString() ?? "0", stats2?.AtBats.ToString() ?? "0");
+                table.AddRow("H", stats1?.Hits.ToString() ?? "0", stats2?.Hits.ToString() ?? "0");
+                var avg1 = stats1?.AtBats > 0 ? (double)stats1.Hits / stats1.AtBats : 0;
+                var avg2 = stats2?.AtBats > 0 ? (double)stats2.Hits / stats2.AtBats : 0;
+                table.AddRow("AVG", avg1.ToString("F3"), avg2.ToString("F3"));
+                table.AddRow("HR", stats1?.HomeRuns.ToString() ?? "0", stats2?.HomeRuns.ToString() ?? "0");
+                table.AddRow("RBI", stats1?.RunsBattedIn.ToString() ?? "0", stats2?.RunsBattedIn.ToString() ?? "0");
             }
             else if (player1.Position == "P" && player2.Position == "P")
             {
                 // Pitching comparison
-                table.AddRow("G", player1.SeasonStats?.GamesPlayed.ToString() ?? "0", player2.SeasonStats?.GamesPlayed.ToString() ?? "0");
-                table.AddRow("W-L", $"{player1.SeasonStats?.Wins ?? 0}-{player1.SeasonStats?.Losses ?? 0}", 
-                    $"{player2.SeasonStats?.Wins ?? 0}-{player2.SeasonStats?.Losses ?? 0}");
-                table.AddRow("ERA", (player1.SeasonStats?.ERA ?? 0).ToString("F2"), (player2.SeasonStats?.ERA ?? 0).ToString("F2"));
-                table.AddRow("IP", (player1.SeasonStats?.InningsPitched ?? 0).ToString("F1"), (player2.SeasonStats?.InningsPitched ?? 0).ToString("F1"));
-                table.AddRow("SO", player1.SeasonStats?.Strikeouts.ToString() ?? "0", player2.SeasonStats?.Strikeouts.ToString() ?? "0");
+                table.AddRow("G", stats1?.GamesPitched.ToString() ?? "0", stats2?.GamesPitched.ToString() ?? "0");
+                table.AddRow("W-L", $"{stats1?.PitchingWins ?? 0}-{stats1?.PitchingLosses ?? 0}", 
+                    $"{stats2?.PitchingWins ?? 0}-{stats2?.PitchingLosses ?? 0}");
+                var era1 = stats1?.Innings > 0 ? (double)(stats1.EarnedRuns * 9) / stats1.Innings : 0;
+                var era2 = stats2?.Innings > 0 ? (double)(stats2.EarnedRuns * 9) / stats2.Innings : 0;
+                table.AddRow("ERA", era1.ToString("F2"), era2.ToString("F2"));
+                table.AddRow("IP", stats1?.Innings.ToString("F1") ?? "0", stats2?.Innings.ToString("F1") ?? "0");
+                table.AddRow("SO", stats1?.StrikeoutsPitching.ToString() ?? "0", stats2?.StrikeoutsPitching.ToString() ?? "0");
             }
 
             AnsiConsole.Write(table);

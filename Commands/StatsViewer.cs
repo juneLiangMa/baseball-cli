@@ -18,7 +18,7 @@ namespace BaseballCli.Commands
 
         public void DisplayStandings(League league)
         {
-            var teams = _db.GetTeamsByLeague(league.LeagueId)
+            var teams = _db.GetTeamsByLeague(league.Id)
                 .OrderByDescending(t => t.Wins)
                 .ThenByDescending(t => t.Losses)
                 .ToList();
@@ -55,7 +55,7 @@ namespace BaseballCli.Commands
 
         public void DisplayPlayerStats(Team team)
         {
-            var players = _db.GetPlayersByTeam(team.TeamId)
+            var players = _db.GetPlayersByTeam(team.Id)
                 .Where(p => p.Position != "P")
                 .OrderByDescending(p => p.SeasonStats?.BattingAverage ?? 0)
                 .ToList();
@@ -94,7 +94,7 @@ namespace BaseballCli.Commands
 
         public void DisplayPitchingStats(Team team)
         {
-            var pitchers = _db.GetPlayersByTeam(team.TeamId)
+            var pitchers = _db.GetPlayersByTeam(team.Id)
                 .Where(p => p.Position == "P")
                 .OrderByDescending(p => p.SeasonStats?.Wins ?? 0)
                 .ToList();
@@ -136,8 +136,8 @@ namespace BaseballCli.Commands
 
         public void DisplayLeagueLeaders(League league)
         {
-            var allPlayers = _db.GetTeamsByLeague(league.LeagueId)
-                .SelectMany(t => _db.GetPlayersByTeam(t.TeamId))
+            var allPlayers = _db.GetTeamsByLeague(league.Id)
+                .SelectMany(t => _db.GetPlayersByTeam(t.Id))
                 .ToList();
 
             AnsiConsole.MarkupLine("[bold cyan]=== League Leaders ===[/]");
@@ -188,8 +188,8 @@ namespace BaseballCli.Commands
 
         public void DisplaySeasonSummary(League league)
         {
-            var teams = _db.GetTeamsByLeague(league.LeagueId).ToList();
-            var totalGames = _db.GetGamesByLeague(league.LeagueId).Count();
+            var teams = _db.GetTeamsByLeague(league.Id).ToList();
+            var totalGames = _db.GetGamesByLeague(league.Id).Count();
 
             AnsiConsole.MarkupLine($"[bold cyan]=== {league.Name} Summary ===[/]");
             AnsiConsole.MarkupLine($"[yellow]Total Games Played:[/] {totalGames}");
@@ -197,8 +197,8 @@ namespace BaseballCli.Commands
             
             if (teams.Any())
             {
-                var avgWins = teams.Average(t => t.Wins);
-                AnsiConsole.MarkupLine($"[yellow]Average Wins/Team:[/] {avgWins:F1}");
+                // Note: Wins/Losses are on TeamStats, not Team
+                AnsiConsole.MarkupLine($"[yellow]Teams:[/] {teams.Count}");
             }
         }
     }

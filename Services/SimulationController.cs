@@ -67,7 +67,7 @@ namespace BaseballCli.Services
             _currentState = new SimulationState
             {
                 LeagueName = league.Name,
-                LeagueId = league.LeagueId,
+                LeagueId = league.Id,
                 CurrentDate = seasonStart,
                 SeasonStart = seasonStart,
                 SeasonEnd = seasonEnd,
@@ -151,7 +151,7 @@ namespace BaseballCli.Services
                 [yellow]Last Updated:[/] {_currentState.LastUpdated:yyyy-MM-dd HH:mm:ss}
                 """);
 
-            panel.BorderColor(Color.Cyan);
+            panel.BorderColor(Color.Cyan1);
             AnsiConsole.Write(panel);
         }
 
