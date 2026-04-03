@@ -1,0 +1,125 @@
+name: Build Cross-Platform Executables
+
+on:
+  push:
+    branches: [ main, develop ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            rid: win-x64
+            artifact_name: baseball-cli.exe
+            artifact_path: bin/Release/net6.0/win-x64/publish/baseball-cli.exe
+          
+          - os: ubuntu-latest
+            rid: linux-x64
+            artifact_name: baseball-cli
+            artifact_path: bin/Release/net6.0/linux-x64/publish/baseball-cli
+          
+          - os: macos-latest
+            rid: osx-x64
+            artifact_name: baseball-cli-osx-x64
+            artifact_path: bin/Release/net6.0/osx-x64/publish/baseball-cli
+          
+          - os: macos-latest
+            rid: osx-arm64
+            artifact_name: baseball-cli-osx-arm64
+            artifact_path: bin/Release/net6.0/osx-arm64/publish/baseball-cli
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '6.0.x'
+    
+    - name: Restore dependencies
+      run: dotnet restore
+    
+    - name: Build
+      run: dotnet publish -c Release -r ${{ matrix.rid }} --self-contained
+    
+    - name: Make Linux executable
+      if: matrix.os == 'ubuntu-latest'
+      run: chmod +x ${{ matrix.artifact_path }}
+    
+    - name: Make macOS executable
+      if: matrix.os == 'macos-latest'
+      run: chmod +x ${{ matrix.artifact_path }}
+    
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: baseball-cli-${{ matrix.rid }}
+        path: ${{ matrix.artifact_path }}
+        retention-days: 30
+
+  create-release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Download all artifacts
+      uses: actions/download-artifact@v3
+    
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Baseball CLI ${{ github.ref }}
+        draft: false
+        prerelease: false
+    
+    - name: Upload Windows executable
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./baseball-cli-win-x64/baseball-cli.exe
+        asset_name: baseball-cli-windows-x64.exe
+        asset_content_type: application/octet-stream
+    
+    - name: Upload Linux executable
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./baseball-cli-linux-x64/baseball-cli
+        asset_name: baseball-cli-linux-x64
+        asset_content_type: application/octet-stream
+    
+    - name: Upload macOS x64 executable
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./baseball-cli-osx-x64/baseball-cli-osx-x64
+        asset_name: baseball-cli-macos-x64
+        asset_content_type: application/octet-stream
+    
+    - name: Upload macOS ARM64 executable
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./baseball-cli-osx-arm64/baseball-cli-osx-arm64
+        asset_name: baseball-cli-macos-arm64
+        asset_content_type: application/octet-stream
