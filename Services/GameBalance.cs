@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using BaseballCli.Config;
 using BaseballCli.Models;
 
@@ -26,6 +27,8 @@ namespace BaseballCli.Services
             }
 
             // Analyze win distributions
+            // TODO: This requires TeamStats data, not available on Team directly
+            /*
             var winPercentages = new List<decimal>();
             decimal totalWins = 0;
             decimal maxWins = 0;
@@ -57,6 +60,7 @@ namespace BaseballCli.Services
             {
                 issues.Add($"League appears unbalanced: Win % variance is {variance:F3}");
             }
+            */
 
             return (issues.Count == 0, issues);
         }
@@ -70,7 +74,7 @@ namespace BaseballCli.Services
             var suggestions = new List<(string, decimal)>();
 
             // If batter is hitting too well (>0.40), suggest lower multiplier
-            if (observedHitRate > 0.40m && (batter.SeasonStats?.BattingAverage ?? 0) > 0.320m)
+            if (observedHitRate > 0.40m && (batter.SeasonStats?.OrderByDescending(s => s.Season).FirstOrDefault()?.BattingAverage ?? 0) > 0.320m)
             {
                 suggestions.Add(
                     ($"Batter {batter.Name} hitting too well ({observedHitRate:F3}), consider lowering multiplier", 0.9m)
@@ -78,7 +82,7 @@ namespace BaseballCli.Services
             }
 
             // If batter is hitting too poorly (<0.15), suggest higher multiplier
-            if (observedHitRate < 0.15m && (batter.SeasonStats?.BattingAverage ?? 0) > 0.250m)
+            if (observedHitRate < 0.15m && (batter.SeasonStats?.OrderByDescending(s => s.Season).FirstOrDefault()?.BattingAverage ?? 0) > 0.250m)
             {
                 suggestions.Add(
                     ($"Batter {batter.Name} hitting too poorly ({observedHitRate:F3}), consider raising multiplier", 1.1m)
@@ -240,9 +244,10 @@ namespace BaseballCli.Services
         /// </summary>
         public static decimal GetSafePlayerAverage(Player player)
         {
-            if (player?.SeasonStats?.AtBats == 0)
+            var stats = player?.SeasonStats?.OrderByDescending(s => s.Season).FirstOrDefault();
+            if (stats?.AtBats == 0)
                 return 0.250m; // League average for unknown players
-            return player?.SeasonStats?.BattingAverage ?? 0;
+            return stats?.BattingAverage ?? 0;
         }
 
         /// <summary>

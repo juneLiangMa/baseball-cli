@@ -71,9 +71,9 @@ namespace BaseballCli.Commands
             var eventColor = GetEventColor(play.EventType);
             var text = $"[{eventColor}]{play.EventType}[/]";
 
-            if (!string.IsNullOrEmpty(play.EventDetails))
+            if (!string.IsNullOrEmpty(play.Result))
             {
-                text += $" - {play.EventDetails}";
+                text += $" - {play.Result}";
             }
 
             AnsiConsole.MarkupLine(text);

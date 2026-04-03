@@ -31,7 +31,7 @@ namespace BaseballCli.Services
             return SelectOutcome(probabilities);
         }
 
-        private OutcomeProabilities GetBattingProbabilities(bool batterIsRight, bool pitcherIsRight)
+        public OutcomeProabilities GetBattingProbabilities(bool batterIsRight, bool pitcherIsRight)
         {
             return (batterIsRight, pitcherIsRight) switch
             {

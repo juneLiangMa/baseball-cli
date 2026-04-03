@@ -257,7 +257,21 @@ namespace BaseballCli.Commands
         {
             try
             {
-                var seasonConfig = _configManager.LoadConfig(config);
+                var (seasonConfig, errors) = _configManager.LoadConfig(config);
+                if (errors.Any())
+                {
+                    AnsiConsole.MarkupLine("[red]✗ Configuration errors:[/]");
+                    foreach (var err in errors)
+                        AnsiConsole.MarkupLine($"  [red]- {err}[/]");
+                    return;
+                }
+
+                if (seasonConfig == null)
+                {
+                    AnsiConsole.MarkupLine("[red]✗ Failed to load configuration[/]");
+                    return;
+                }
+
                 var league = _repository.GetLeagueByName(seasonConfig.LeagueName);
                 
                 if (league == null)
@@ -304,7 +318,21 @@ namespace BaseballCli.Commands
         {
             try
             {
-                var seasonConfig = _configManager.LoadConfig(config);
+                var (seasonConfig, errors) = _configManager.LoadConfig(config);
+                if (errors.Any())
+                {
+                    AnsiConsole.MarkupLine("[red]✗ Configuration errors:[/]");
+                    foreach (var err in errors)
+                        AnsiConsole.MarkupLine($"  [red]- {err}[/]");
+                    return;
+                }
+
+                if (seasonConfig == null)
+                {
+                    AnsiConsole.MarkupLine("[red]✗ Failed to load configuration[/]");
+                    return;
+                }
+
                 var league = _repository.GetLeagueByName(seasonConfig.LeagueName);
                 
                 if (league == null)

@@ -55,12 +55,12 @@ namespace BaseballCli.Commands
 
             foreach (var game in games.OrderBy(g => g.GameDate))
             {
-                var status = game.IsCompleted ? "Final" : "Scheduled";
-                var result = game.IsCompleted
+                var status = game.Status == "Completed" ? "Final" : "Scheduled";
+                var result = game.Status == "Completed"
                     ? $"{game.AwayScore}-{game.HomeScore}"
                     : "—";
 
-                var resultColor = game.IsCompleted
+                var resultColor = game.Status == "Completed"
                     ? (game.HomeScore > game.AwayScore ? "[green]" : "[red]")
                     : "[yellow]";
 
@@ -78,7 +78,7 @@ namespace BaseballCli.Commands
 
         public void DisplayGameDetails(Game game)
         {
-            if (!game.IsCompleted)
+            if (game.Status != "Completed")
             {
                 AnsiConsole.MarkupLine("[yellow]Game not completed yet[/]");
                 return;
@@ -93,7 +93,7 @@ namespace BaseballCli.Commands
             AnsiConsole.WriteLine();
 
             // Get plays for this game
-            var plays = _repository.GetPlaysByGame(game.GameId);
+            var plays = _repository.GetPlaysByGame(game.Id);
 
             if (!plays.Any())
             {
@@ -115,9 +115,9 @@ namespace BaseballCli.Commands
                 table.AddColumn("Event");
                 table.AddColumn("Details");
 
-                foreach (var play in inningGroup.OrderBy(p => p.PlaySequence))
+                foreach (var play in inningGroup.OrderBy(p => p.PlayNumber))
                 {
-                    var time = play.PlaySequence;
+                    var time = play.PlayNumber;
                     var eventColor = GetEventColor(play.EventType);
 
                     table.AddRow(
@@ -125,7 +125,7 @@ namespace BaseballCli.Commands
                         play.Batter?.Name ?? "?",
                         play.Pitcher?.Name ?? "?",
                         $"[{eventColor}]{play.EventType}[/]",
-                        play.EventDetails ?? "—"
+                        play.Result ?? "—"
                     );
                 }
 
@@ -136,7 +136,7 @@ namespace BaseballCli.Commands
 
         public void DisplayInningByInning(Game game)
         {
-            if (!game.IsCompleted)
+            if (!game.Status == "Completed")
             {
                 AnsiConsole.MarkupLine("[yellow]Game not completed yet[/]");
                 return;
@@ -149,7 +149,7 @@ namespace BaseballCli.Commands
             table.AddColumn(new TableColumn(game.AwayTeam?.Name ?? "Away").Centered());
             table.AddColumn(new TableColumn(game.HomeTeam?.Name ?? "Home").Centered());
 
-            var plays = _repository.GetPlaysByGame(game.GameId).ToList();
+            var plays = _repository.GetPlaysByGame(game.Id).ToList();
             var playsByInning = plays.GroupBy(p => p.Inning).OrderBy(g => g.Key);
 
             int awayScore = 0;
@@ -180,7 +180,7 @@ namespace BaseballCli.Commands
         public void DisplayTeamGameLog(Team team, int limit = 10)
         {
             var games = _repository.GetGamesByTeam(team.Id)
-                .Where(g => g.IsCompleted)
+                .Where(g => g.Status == "Completed")
                 .OrderByDescending(g => g.GameDate)
                 .Take(limit)
                 .ToList();

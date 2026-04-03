@@ -196,7 +196,7 @@ namespace BaseballCli.Services
             runsScored = 0;
 
             // Scoring runners from 3rd
-            if (bases.Third && basesAwarded > 0)
+            if ((bases.Third ?? false) && basesAwarded > 0)
                 runsScored++;
 
             // Advance runners

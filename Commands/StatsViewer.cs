@@ -18,35 +18,28 @@ namespace BaseballCli.Commands
 
         public void DisplayStandings(League league)
         {
-            var teams = _db.GetTeamsByLeague(league.Id)
-                .OrderByDescending(t => t.Wins)
-                .ThenByDescending(t => t.Losses)
-                .ToList();
+            // TODO: Standings require TeamStats data for current season
+            // For now, just display teams
+            var teams = _db.GetTeamsByLeague(league.Id).ToList();
+
+            if (!teams.Any())
+            {
+                AnsiConsole.MarkupLine("[yellow]No teams found in this league.[/]");
+                return;
+            }
 
             var table = new Table();
-            table.Title = new TableTitle($"[bold]{league.Name} Standings[/]");
+            table.Title = new TableTitle($"[bold]{league.Name} Teams[/]");
             table.AddColumn("Team");
-            table.AddColumn(new TableColumn("W").Centered());
-            table.AddColumn(new TableColumn("L").Centered());
-            table.AddColumn(new TableColumn("GB").Centered());
-            table.AddColumn(new TableColumn("Win %").Centered());
-
-            double? firstWins = teams.FirstOrDefault()?.Wins;
+            table.AddColumn("Manager");
+            table.AddColumn("Players");
 
             foreach (var team in teams)
             {
-                var gamesBack = firstWins.HasValue && firstWins > team.Wins
-                    ? (firstWins.Value - team.Wins).ToString("F1")
-                    : "—";
-
-                var winPct = team.WinPercentage > 0 ? team.WinPercentage.ToString("F3") : ".000";
-
                 table.AddRow(
                     new Text(team.Name),
-                    new Text(team.Wins.ToString()).Centered(),
-                    new Text(team.Losses.ToString()).Centered(),
-                    new Text(gamesBack).Centered(),
-                    new Text(winPct).Centered()
+                    new Text(team.ManagerName),
+                    new Text(team.Players?.Count.ToString() ?? "0")
                 );
             }
 
@@ -57,7 +50,7 @@ namespace BaseballCli.Commands
         {
             var players = _db.GetPlayersByTeam(team.Id)
                 .Where(p => p.Position != "P")
-                .OrderByDescending(p => p.SeasonStats?.BattingAverage ?? 0)
+                .OrderByDescending(p => p.SeasonStats?.OrderByDescending(s => s.Season).FirstOrDefault()?.BattingAverage ?? 0)
                 .ToList();
 
             var table = new Table();
@@ -73,7 +66,7 @@ namespace BaseballCli.Commands
 
             foreach (var player in players)
             {
-                var stats = player.SeasonStats;
+                var stats = player.SeasonStats?.OrderByDescending(s => s.Season).FirstOrDefault();
                 var avg = stats?.BattingAverage ?? 0;
                 var avgStr = avg > 0 ? avg.ToString("F3") : ".000";
 
@@ -96,7 +89,7 @@ namespace BaseballCli.Commands
         {
             var pitchers = _db.GetPlayersByTeam(team.Id)
                 .Where(p => p.Position == "P")
-                .OrderByDescending(p => p.SeasonStats?.Wins ?? 0)
+                .OrderByDescending(p => p.SeasonStats?.OrderByDescending(s => s.Season).FirstOrDefault()?.PitchingWins ?? 0)
                 .ToList();
 
             if (!pitchers.Any())
@@ -123,7 +116,7 @@ namespace BaseballCli.Commands
                 table.AddRow(
                     pitcher.Name,
                     stats?.GamesPlayed.ToString() ?? "0",
-                    (stats?.InningsPitched ?? 0).ToString("F1"),
+                    (stats?.Innings ?? 0).ToString("F1"),
                     stats?.Wins.ToString() ?? "0",
                     stats?.Losses.ToString() ?? "0",
                     eraStr,
@@ -144,34 +137,36 @@ namespace BaseballCli.Commands
             AnsiConsole.WriteLine();
 
             // Batting Average Leaders
-            var batters = allPlayers.Where(p => p.Position != "P").OrderByDescending(p => p.SeasonStats?.BattingAverage ?? 0).Take(5).ToList();
+            var batters = allPlayers.Where(p => p.Position != "P").OrderByDescending(p => p.SeasonStats?.OrderByDescending(s => s.Season).FirstOrDefault()?.BattingAverage ?? 0).Take(5).ToList();
             if (batters.Any())
             {
                 AnsiConsole.MarkupLine("[bold]Batting Average:[/]");
                 for (int i = 0; i < batters.Count; i++)
                 {
-                    var avg = batters[i].SeasonStats?.BattingAverage ?? 0;
+                    var stats = batters[i].SeasonStats?.OrderByDescending(s => s.Season).FirstOrDefault();
+                    var avg = stats?.BattingAverage ?? 0;
                     var avgStr = avg > 0 ? avg.ToString("F3") : ".000";
-                    AnsiConsole.MarkupLine($"  {i + 1}. {batters[i].Name} ({batters[i].SeasonStats?.Team?.Name}) - {avgStr}");
+                    AnsiConsole.MarkupLine($"  {i + 1}. {batters[i].Name} ({stats?.Team?.Name}) - {avgStr}");
                 }
                 AnsiConsole.WriteLine();
             }
 
             // Home Run Leaders
-            var hrLeaders = allPlayers.Where(p => p.Position != "P").OrderByDescending(p => p.SeasonStats?.HomeRuns ?? 0).Take(5).ToList();
-            if (hrLeaders.Any() && (hrLeaders[0].SeasonStats?.HomeRuns ?? 0) > 0)
+            var hrLeaders = allPlayers.Where(p => p.Position != "P").OrderByDescending(p => p.SeasonStats?.OrderByDescending(s => s.Season).FirstOrDefault()?.HomeRuns ?? 0).Take(5).ToList();
+            if (hrLeaders.Any() && (hrLeaders[0].SeasonStats?.OrderByDescending(s => s.Season).FirstOrDefault()?.HomeRuns ?? 0) > 0)
             {
                 AnsiConsole.MarkupLine("[bold]Home Runs:[/]");
                 for (int i = 0; i < hrLeaders.Count; i++)
                 {
-                    AnsiConsole.MarkupLine($"  {i + 1}. {hrLeaders[i].Name} ({hrLeaders[i].SeasonStats?.Team?.Name}) - {hrLeaders[i].SeasonStats?.HomeRuns ?? 0}");
+                    var stats = hrLeaders[i].SeasonStats?.OrderByDescending(s => s.Season).FirstOrDefault();
+                    AnsiConsole.MarkupLine($"  {i + 1}. {hrLeaders[i].Name} ({stats?.Team?.Name}) - {stats?.HomeRuns ?? 0}");
                 }
                 AnsiConsole.WriteLine();
             }
 
             // ERA Leaders (pitchers with at least 1 inning pitched)
-            var pitchers = allPlayers.Where(p => p.Position == "P" && (p.SeasonStats?.InningsPitched ?? 0) > 0)
-                .OrderBy(p => p.SeasonStats?.ERA ?? 0)
+            var pitchers = allPlayers.Where(p => p.Position == "P" && (p.SeasonStats?.OrderByDescending(s => s.Season).FirstOrDefault()?.Innings ?? 0) > 0)
+                .OrderBy(p => p.SeasonStats?.OrderByDescending(s => s.Season).FirstOrDefault()?.ERA ?? 0)
                 .Take(5)
                 .ToList();
             if (pitchers.Any())
@@ -179,9 +174,10 @@ namespace BaseballCli.Commands
                 AnsiConsole.MarkupLine("[bold]ERA (min 1 IP):[/]");
                 for (int i = 0; i < pitchers.Count; i++)
                 {
-                    var era = pitchers[i].SeasonStats?.ERA ?? 0;
+                    var stats = pitchers[i].SeasonStats?.OrderByDescending(s => s.Season).FirstOrDefault();
+                    var era = stats?.ERA ?? 0;
                     var eraStr = era > 0 ? era.ToString("F2") : "—";
-                    AnsiConsole.MarkupLine($"  {i + 1}. {pitchers[i].Name} ({pitchers[i].SeasonStats?.Team?.Name}) - {eraStr}");
+                    AnsiConsole.MarkupLine($"  {i + 1}. {pitchers[i].Name} ({stats?.Team?.Name}) - {eraStr}");
                 }
             }
         }
