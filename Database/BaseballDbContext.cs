@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using BaseballCli.Models;
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace BaseballCli.Database
