@@ -255,8 +255,24 @@ namespace BaseballCli.Commands
 
         private void HandleStandingsCommand(string config, string sort)
         {
-            AnsiConsole.MarkupLine("[yellow]Note: Standings not fully integrated yet[/]");
-            AnsiConsole.MarkupLine($"Would show: config={config}, sort={sort}");
+            try
+            {
+                var seasonConfig = _configManager.LoadConfig(config);
+                var league = _repository.GetLeagueByName(seasonConfig.LeagueName);
+                
+                if (league == null)
+                {
+                    AnsiConsole.MarkupLine($"[red]✗ League '{seasonConfig.LeagueName}' not found in database[/]");
+                    return;
+                }
+
+                var viewer = new StatsViewer(_dbContext);
+                viewer.DisplayStandings(league);
+            }
+            catch (Exception ex)
+            {
+                AnsiConsole.MarkupLine($"[red]✗ Error loading standings: {ex.Message}[/]");
+            }
         }
 
         private Command BuildStatsCommand()
@@ -286,8 +302,56 @@ namespace BaseballCli.Commands
 
         private void HandleStatsCommand(string? player, string config)
         {
-            AnsiConsole.MarkupLine("[yellow]Note: Stats not fully integrated yet[/]");
-            AnsiConsole.MarkupLine($"Would show: config={config}, player={player ?? "(league leaders)"}");
+            try
+            {
+                var seasonConfig = _configManager.LoadConfig(config);
+                var league = _repository.GetLeagueByName(seasonConfig.LeagueName);
+                
+                if (league == null)
+                {
+                    AnsiConsole.MarkupLine($"[red]✗ League '{seasonConfig.LeagueName}' not found in database[/]");
+                    return;
+                }
+
+                var viewer = new StatsViewer(_dbContext);
+
+                if (string.IsNullOrEmpty(player))
+                {
+                    // Show league leaders
+                    viewer.DisplayLeagueLeaders(league);
+                }
+                else
+                {
+                    // Show specific player stats
+                    var playerRecord = _repository.GetPlayerByName(player);
+                    if (playerRecord == null)
+                    {
+                        AnsiConsole.MarkupLine($"[red]✗ Player '{player}' not found[/]");
+                        return;
+                    }
+
+                    AnsiConsole.MarkupLine($"[bold cyan]=== {playerRecord.Name} ===[/]");
+                    AnsiConsole.MarkupLine($"[yellow]Position:[/] {playerRecord.Position}");
+                    AnsiConsole.MarkupLine($"[yellow]Team:[/] {playerRecord.SeasonStats?.Team?.Name ?? "N/A"}");
+                    
+                    if (playerRecord.Position == "P")
+                    {
+                        AnsiConsole.MarkupLine($"[yellow]Record:[/] {playerRecord.SeasonStats?.Wins ?? 0}-{playerRecord.SeasonStats?.Losses ?? 0}");
+                        AnsiConsole.MarkupLine($"[yellow]ERA:[/] {(playerRecord.SeasonStats?.ERA ?? 0):F2}");
+                        AnsiConsole.MarkupLine($"[yellow]Strikeouts:[/] {playerRecord.SeasonStats?.Strikeouts ?? 0}");
+                    }
+                    else
+                    {
+                        AnsiConsole.MarkupLine($"[yellow]AVG:[/] {(playerRecord.SeasonStats?.BattingAverage ?? 0):F3}");
+                        AnsiConsole.MarkupLine($"[yellow]HR:[/] {playerRecord.SeasonStats?.HomeRuns ?? 0}");
+                        AnsiConsole.MarkupLine($"[yellow]RBI:[/] {playerRecord.SeasonStats?.RunsBattedIn ?? 0}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                AnsiConsole.MarkupLine($"[red]✗ Error loading stats: {ex.Message}[/]");
+            }
         }
 
         private Command BuildListCommand()
