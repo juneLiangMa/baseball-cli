@@ -1,0 +1,295 @@
+{
+  "league": {
+    "name": "Test Baseball League",
+    "description": "A test league for demonstration purposes"
+  },
+  "teams": [
+    {
+      "name": "Home Runs",
+      "city": "Boston",
+      "manager": "John Manager",
+      "players": [
+        {
+          "name": "Pitcher One",
+          "gender": "M",
+          "position": "Pitcher",
+          "battingAverage": 0.150,
+          "powerRating": 0.200,
+          "speedRating": 0.300,
+          "fieldingAverage": 0.950,
+          "pitchingSpeed": 92,
+          "controlRating": 0.78,
+          "salary": 3000000
+        },
+        {
+          "name": "Pitcher Two",
+          "gender": "M",
+          "position": "Pitcher",
+          "battingAverage": 0.140,
+          "powerRating": 0.180,
+          "speedRating": 0.250,
+          "fieldingAverage": 0.950,
+          "pitchingSpeed": 88,
+          "controlRating": 0.72,
+          "salary": 2500000
+        },
+        {
+          "name": "Catcher",
+          "gender": "M",
+          "position": "Catcher",
+          "battingAverage": 0.270,
+          "powerRating": 0.450,
+          "speedRating": 0.300,
+          "fieldingAverage": 0.975,
+          "salary": 4000000
+        },
+        {
+          "name": "Shortstop",
+          "gender": "M",
+          "position": "Infielder",
+          "battingAverage": 0.290,
+          "powerRating": 0.400,
+          "speedRating": 0.700,
+          "fieldingAverage": 0.965,
+          "salary": 3500000
+        },
+        {
+          "name": "Second Base",
+          "gender": "M",
+          "position": "Infielder",
+          "battingAverage": 0.280,
+          "powerRating": 0.380,
+          "speedRating": 0.650,
+          "fieldingAverage": 0.970,
+          "salary": 3000000
+        },
+        {
+          "name": "Third Base",
+          "gender": "M",
+          "position": "Infielder",
+          "battingAverage": 0.285,
+          "powerRating": 0.480,
+          "speedRating": 0.500,
+          "fieldingAverage": 0.960,
+          "salary": 3200000
+        },
+        {
+          "name": "First Base",
+          "gender": "M",
+          "position": "Infielder",
+          "battingAverage": 0.310,
+          "powerRating": 0.550,
+          "speedRating": 0.400,
+          "fieldingAverage": 0.975,
+          "salary": 4500000
+        },
+        {
+          "name": "Left Field",
+          "gender": "M",
+          "position": "Outfielder",
+          "battingAverage": 0.300,
+          "powerRating": 0.520,
+          "speedRating": 0.550,
+          "fieldingAverage": 0.945,
+          "salary": 3800000
+        },
+        {
+          "name": "Center Field",
+          "gender": "M",
+          "position": "Outfielder",
+          "battingAverage": 0.305,
+          "powerRating": 0.480,
+          "speedRating": 0.750,
+          "fieldingAverage": 0.960,
+          "salary": 4200000
+        }
+      ]
+    },
+    {
+      "name": "Strike Force",
+      "city": "New York",
+      "manager": "Jane Boss",
+      "players": [
+        {
+          "name": "Ace Pitcher",
+          "gender": "M",
+          "position": "Pitcher",
+          "battingAverage": 0.160,
+          "powerRating": 0.220,
+          "speedRating": 0.320,
+          "fieldingAverage": 0.965,
+          "pitchingSpeed": 95,
+          "controlRating": 0.82,
+          "salary": 4000000
+        },
+        {
+          "name": "Backup Pitcher",
+          "gender": "M",
+          "position": "Pitcher",
+          "battingAverage": 0.145,
+          "powerRating": 0.190,
+          "speedRating": 0.270,
+          "fieldingAverage": 0.950,
+          "pitchingSpeed": 87,
+          "controlRating": 0.70,
+          "salary": 2200000
+        },
+        {
+          "name": "Star Catcher",
+          "gender": "M",
+          "position": "Catcher",
+          "battingAverage": 0.295,
+          "powerRating": 0.500,
+          "speedRating": 0.350,
+          "fieldingAverage": 0.985,
+          "salary": 5000000
+        },
+        {
+          "name": "Infielder One",
+          "gender": "M",
+          "position": "Infielder",
+          "battingAverage": 0.300,
+          "powerRating": 0.420,
+          "speedRating": 0.600,
+          "fieldingAverage": 0.968,
+          "salary": 3200000
+        },
+        {
+          "name": "Infielder Two",
+          "gender": "M",
+          "position": "Infielder",
+          "battingAverage": 0.275,
+          "powerRating": 0.350,
+          "speedRating": 0.680,
+          "fieldingAverage": 0.972,
+          "salary": 2800000
+        },
+        {
+          "name": "Infielder Three",
+          "gender": "M",
+          "position": "Infielder",
+          "battingAverage": 0.280,
+          "powerRating": 0.500,
+          "speedRating": 0.480,
+          "fieldingAverage": 0.962,
+          "salary": 3100000
+        },
+        {
+          "name": "Infielder Four",
+          "gender": "M",
+          "position": "Infielder",
+          "battingAverage": 0.320,
+          "powerRating": 0.600,
+          "speedRating": 0.420,
+          "fieldingAverage": 0.970,
+          "salary": 5500000
+        },
+        {
+          "name": "Outfielder One",
+          "gender": "M",
+          "position": "Outfielder",
+          "battingAverage": 0.310,
+          "powerRating": 0.550,
+          "speedRating": 0.600,
+          "fieldingAverage": 0.950,
+          "salary": 4200000
+        },
+        {
+          "name": "Outfielder Two",
+          "gender": "M",
+          "position": "Outfielder",
+          "battingAverage": 0.315,
+          "powerRating": 0.500,
+          "speedRating": 0.800,
+          "fieldingAverage": 0.965,
+          "salary": 4500000
+        }
+      ]
+    }
+  ],
+  "rules": {
+    "seasonLength": 162,
+    "gamesPerSeries": 3,
+    "inningsPerGame": 9,
+    "randomSeed": null,
+    "injuryRate": 0.02,
+    "fatigueThreshold": 5,
+    "startDate": "2024-04-01"
+  },
+  "probabilityTables": {
+    "batting": {
+      "rightVsRight": {
+        "strikeout": 0.15,
+        "walk": 0.10,
+        "single": 0.20,
+        "double": 0.05,
+        "triple": 0.01,
+        "homeRun": 0.04,
+        "fieldersChoice": 0.15,
+        "out": 0.30
+      },
+      "rightVsLeft": {
+        "strikeout": 0.18,
+        "walk": 0.12,
+        "single": 0.18,
+        "double": 0.04,
+        "triple": 0.01,
+        "homeRun": 0.03,
+        "fieldersChoice": 0.14,
+        "out": 0.30
+      },
+      "leftVsRight": {
+        "strikeout": 0.13,
+        "walk": 0.09,
+        "single": 0.22,
+        "double": 0.06,
+        "triple": 0.02,
+        "homeRun": 0.05,
+        "fieldersChoice": 0.16,
+        "out": 0.27
+      },
+      "leftVsLeft": {
+        "strikeout": 0.16,
+        "walk": 0.11,
+        "single": 0.19,
+        "double": 0.05,
+        "triple": 0.01,
+        "homeRun": 0.04,
+        "fieldersChoice": 0.14,
+        "out": 0.30
+      }
+    },
+    "pitching": {
+      "fastball": {
+        "strikeout": 0.18,
+        "walk": 0.08,
+        "single": 0.18,
+        "double": 0.03,
+        "triple": 0.00,
+        "homeRun": 0.06,
+        "fieldersChoice": 0.10,
+        "out": 0.37
+      },
+      "offspeed": {
+        "strikeout": 0.22,
+        "walk": 0.10,
+        "single": 0.15,
+        "double": 0.04,
+        "triple": 0.01,
+        "homeRun": 0.02,
+        "fieldersChoice": 0.12,
+        "out": 0.34
+      }
+    },
+    "fielding": {
+      "infielder": {
+        "out": 0.965,
+        "error": 0.035
+      },
+      "outfielder": {
+        "out": 0.950,
+        "error": 0.050
+      }
+    }
+  }
+}
