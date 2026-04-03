@@ -74,7 +74,8 @@ namespace BaseballCli.Services
             var suggestions = new List<(string, decimal)>();
 
             // If batter is hitting too well (>0.40), suggest lower multiplier
-            if (observedHitRate > 0.40m && (batter.SeasonStats?.OrderByDescending(s => s.Season).FirstOrDefault()?.BattingAverage ?? 0) > 0.320m)
+            var battingAvg = (decimal)(batter.SeasonStats?.OrderByDescending(s => s.Season).FirstOrDefault()?.BattingAverage ?? 0);
+            if (observedHitRate > 0.40m && battingAvg > 0.320m)
             {
                 suggestions.Add(
                     ($"Batter {batter.Name} hitting too well ({observedHitRate:F3}), consider lowering multiplier", 0.9m)
@@ -82,7 +83,7 @@ namespace BaseballCli.Services
             }
 
             // If batter is hitting too poorly (<0.15), suggest higher multiplier
-            if (observedHitRate < 0.15m && (batter.SeasonStats?.OrderByDescending(s => s.Season).FirstOrDefault()?.BattingAverage ?? 0) > 0.250m)
+            if (observedHitRate < 0.15m && battingAvg > 0.250m)
             {
                 suggestions.Add(
                     ($"Batter {batter.Name} hitting too poorly ({observedHitRate:F3}), consider raising multiplier", 1.1m)
@@ -247,7 +248,7 @@ namespace BaseballCli.Services
             var stats = player?.SeasonStats?.OrderByDescending(s => s.Season).FirstOrDefault();
             if (stats?.AtBats == 0)
                 return 0.250m; // League average for unknown players
-            return stats?.BattingAverage ?? 0;
+            return (decimal)(stats?.BattingAverage ?? 0);
         }
 
         /// <summary>

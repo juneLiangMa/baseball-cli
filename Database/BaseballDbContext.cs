@@ -410,6 +410,21 @@ namespace BaseballCli.Database
                 .ToList();
         }
 
+        public Player? GetPlayerByName(string name)
+        {
+            return _context.Players.FirstOrDefault(p => p.Name == name);
+        }
+
+        public List<Game> GetGamesByTeam(string teamId)
+        {
+            return _context.Games
+                .Where(g => g.HomeTeamId == teamId || g.AwayTeamId == teamId)
+                .Include(g => g.HomeTeam)
+                .Include(g => g.AwayTeam)
+                .OrderBy(g => g.GameDate)
+                .ToList();
+        }
+
         public void SaveChanges()
         {
             _context.SaveChanges();

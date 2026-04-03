@@ -136,7 +136,7 @@ namespace BaseballCli.Commands
 
         public void DisplayInningByInning(Game game)
         {
-            if (!game.Status == "Completed")
+            if (game.Status != "Completed")
             {
                 AnsiConsole.MarkupLine("[yellow]Game not completed yet[/]");
                 return;

@@ -272,11 +272,11 @@ namespace BaseballCli.Commands
                     return;
                 }
 
-                var league = _repository.GetLeagueByName(seasonConfig.LeagueName);
+                var league = _repository.GetLeagueByName(seasonConfig.League.Name);
                 
                 if (league == null)
                 {
-                    AnsiConsole.MarkupLine($"[red]✗ League '{seasonConfig.LeagueName}' not found in database[/]");
+                    AnsiConsole.MarkupLine($"[red]✗ League '{seasonConfig.League.Name}' not found in database[/]");
                     return;
                 }
 
@@ -333,11 +333,11 @@ namespace BaseballCli.Commands
                     return;
                 }
 
-                var league = _repository.GetLeagueByName(seasonConfig.LeagueName);
+                var league = _repository.GetLeagueByName(seasonConfig.League.Name);
                 
                 if (league == null)
                 {
-                    AnsiConsole.MarkupLine($"[red]✗ League '{seasonConfig.LeagueName}' not found in database[/]");
+                    AnsiConsole.MarkupLine($"[red]✗ League '{seasonConfig.League.Name}' not found in database[/]");
                     return;
                 }
 
@@ -360,19 +360,20 @@ namespace BaseballCli.Commands
 
                     AnsiConsole.MarkupLine($"[bold cyan]=== {playerRecord.Name} ===[/]");
                     AnsiConsole.MarkupLine($"[yellow]Position:[/] {playerRecord.Position}");
-                    AnsiConsole.MarkupLine($"[yellow]Team:[/] {playerRecord.SeasonStats?.Team?.Name ?? "N/A"}");
+                    var stats = playerRecord.SeasonStats?.OrderByDescending(s => s.Season).FirstOrDefault();
+                    AnsiConsole.MarkupLine($"[yellow]Team:[/] {stats?.Team?.Name ?? "N/A"}");
                     
                     if (playerRecord.Position == "P")
                     {
-                        AnsiConsole.MarkupLine($"[yellow]Record:[/] {playerRecord.SeasonStats?.Wins ?? 0}-{playerRecord.SeasonStats?.Losses ?? 0}");
-                        AnsiConsole.MarkupLine($"[yellow]ERA:[/] {(playerRecord.SeasonStats?.ERA ?? 0):F2}");
-                        AnsiConsole.MarkupLine($"[yellow]Strikeouts:[/] {playerRecord.SeasonStats?.Strikeouts ?? 0}");
+                        AnsiConsole.MarkupLine($"[yellow]Record:[/] {stats?.PitchingWins ?? 0}-{stats?.PitchingLosses ?? 0}");
+                        AnsiConsole.MarkupLine($"[yellow]ERA:[/] {(stats?.ERA ?? 0):F2}");
+                        AnsiConsole.MarkupLine($"[yellow]Strikeouts:[/] {stats?.StrikeoutsPitching ?? 0}");
                     }
                     else
                     {
-                        AnsiConsole.MarkupLine($"[yellow]AVG:[/] {(playerRecord.SeasonStats?.BattingAverage ?? 0):F3}");
-                        AnsiConsole.MarkupLine($"[yellow]HR:[/] {playerRecord.SeasonStats?.HomeRuns ?? 0}");
-                        AnsiConsole.MarkupLine($"[yellow]RBI:[/] {playerRecord.SeasonStats?.RunsBattedIn ?? 0}");
+                        AnsiConsole.MarkupLine($"[yellow]AVG:[/] {(stats?.BattingAverage ?? 0):F3}");
+                        AnsiConsole.MarkupLine($"[yellow]HR:[/] {stats?.HomeRuns ?? 0}");
+                        AnsiConsole.MarkupLine($"[yellow]RBI:[/] {stats?.RunsBattedIn ?? 0}");
                     }
                 }
             }

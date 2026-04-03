@@ -110,17 +110,18 @@ namespace BaseballCli.Commands
 
             foreach (var pitcher in pitchers)
             {
-                var stats = pitcher.SeasonStats;
-                var eraStr = stats?.ERA ?? 0 > 0 ? (stats?.ERA ?? 0).ToString("F2") : "—";
+                var stats = pitcher.SeasonStats?.OrderByDescending(s => s.Season).FirstOrDefault();
+                var era = stats?.ERA ?? 0;
+                var eraStr = era > 0 ? era.ToString("F2") : "—";
 
                 table.AddRow(
                     pitcher.Name,
-                    stats?.GamesPlayed.ToString() ?? "0",
+                    stats?.GamesPitched.ToString() ?? "0",
                     (stats?.Innings ?? 0).ToString("F1"),
-                    stats?.Wins.ToString() ?? "0",
-                    stats?.Losses.ToString() ?? "0",
+                    stats?.PitchingWins.ToString() ?? "0",
+                    stats?.PitchingLosses.ToString() ?? "0",
                     eraStr,
-                    stats?.Strikeouts.ToString() ?? "0"
+                    stats?.StrikeoutsPitching.ToString() ?? "0"
                 );
             }
 
