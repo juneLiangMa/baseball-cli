@@ -148,6 +148,10 @@ namespace BaseballCli.Commands
                 return;
             }
 
+            // Initialize the database with the loaded configuration
+            _dbContext.InitializeDatabase();
+            _repository.LoadSeasonConfiguration(config);
+
             AnsiConsole.MarkupLine($"[green]✓[/] Loaded configuration: [bold]{config.League.Name}[/]");
             DisplayConfigSummary(config);
         }

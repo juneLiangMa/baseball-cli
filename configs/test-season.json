@@ -1,0 +1,294 @@
+{
+  "league": {
+    "name": "Test League 2026",
+    "description": "A simple example baseball league"
+  },
+  "teams": [
+    {
+      "name": "Team A",
+      "city": "City A",
+      "manager": "Manager A",
+      "players": [
+        {
+          "name": "Team A Player 1",
+          "gender": "M",
+          "position": "Pitcher",
+          "battingAverage": 0.15,
+          "powerRating": 0.4,
+          "speedRating": 0.4,
+          "fieldingAverage": 0.95,
+          "pitchingSpeed": 90,
+          "controlRating": 0.75,
+          "salary": 2000000
+        },
+        {
+          "name": "Team A Player 2",
+          "gender": "M",
+          "position": "Pitcher",
+          "battingAverage": 0.15,
+          "powerRating": 0.4,
+          "speedRating": 0.4,
+          "fieldingAverage": 0.95,
+          "pitchingSpeed": 90,
+          "controlRating": 0.75,
+          "salary": 2000000
+        },
+        {
+          "name": "Team A Player 3",
+          "gender": "M",
+          "position": "Catcher",
+          "battingAverage": 0.28,
+          "powerRating": 0.4,
+          "speedRating": 0.4,
+          "fieldingAverage": 0.95,
+          "salary": 2000000
+        },
+        {
+          "name": "Team A Player 4",
+          "gender": "M",
+          "position": "Infielder",
+          "battingAverage": 0.28,
+          "powerRating": 0.4,
+          "speedRating": 0.4,
+          "fieldingAverage": 0.95,
+          "salary": 2000000
+        },
+        {
+          "name": "Team A Player 5",
+          "gender": "M",
+          "position": "Infielder",
+          "battingAverage": 0.28,
+          "powerRating": 0.4,
+          "speedRating": 0.4,
+          "fieldingAverage": 0.95,
+          "salary": 2000000
+        },
+        {
+          "name": "Team A Player 6",
+          "gender": "M",
+          "position": "Infielder",
+          "battingAverage": 0.28,
+          "powerRating": 0.4,
+          "speedRating": 0.4,
+          "fieldingAverage": 0.95,
+          "salary": 2000000
+        },
+        {
+          "name": "Team A Player 7",
+          "gender": "M",
+          "position": "Infielder",
+          "battingAverage": 0.28,
+          "powerRating": 0.4,
+          "speedRating": 0.4,
+          "fieldingAverage": 0.95,
+          "salary": 2000000
+        },
+        {
+          "name": "Team A Player 8",
+          "gender": "M",
+          "position": "Outfielder",
+          "battingAverage": 0.28,
+          "powerRating": 0.4,
+          "speedRating": 0.4,
+          "fieldingAverage": 0.95,
+          "salary": 2000000
+        },
+        {
+          "name": "Team A Player 9",
+          "gender": "M",
+          "position": "Outfielder",
+          "battingAverage": 0.28,
+          "powerRating": 0.4,
+          "speedRating": 0.4,
+          "fieldingAverage": 0.95,
+          "salary": 2000000
+        }
+      ]
+    },
+    {
+      "name": "Team B",
+      "city": "City B",
+      "manager": "Manager B",
+      "players": [
+        {
+          "name": "Team B Player 1",
+          "gender": "M",
+          "position": "Pitcher",
+          "battingAverage": 0.15,
+          "powerRating": 0.4,
+          "speedRating": 0.4,
+          "fieldingAverage": 0.95,
+          "pitchingSpeed": 90,
+          "controlRating": 0.75,
+          "salary": 2000000
+        },
+        {
+          "name": "Team B Player 2",
+          "gender": "M",
+          "position": "Pitcher",
+          "battingAverage": 0.15,
+          "powerRating": 0.4,
+          "speedRating": 0.4,
+          "fieldingAverage": 0.95,
+          "pitchingSpeed": 90,
+          "controlRating": 0.75,
+          "salary": 2000000
+        },
+        {
+          "name": "Team B Player 3",
+          "gender": "M",
+          "position": "Catcher",
+          "battingAverage": 0.28,
+          "powerRating": 0.4,
+          "speedRating": 0.4,
+          "fieldingAverage": 0.95,
+          "salary": 2000000
+        },
+        {
+          "name": "Team B Player 4",
+          "gender": "M",
+          "position": "Infielder",
+          "battingAverage": 0.28,
+          "powerRating": 0.4,
+          "speedRating": 0.4,
+          "fieldingAverage": 0.95,
+          "salary": 2000000
+        },
+        {
+          "name": "Team B Player 5",
+          "gender": "M",
+          "position": "Infielder",
+          "battingAverage": 0.28,
+          "powerRating": 0.4,
+          "speedRating": 0.4,
+          "fieldingAverage": 0.95,
+          "salary": 2000000
+        },
+        {
+          "name": "Team B Player 6",
+          "gender": "M",
+          "position": "Infielder",
+          "battingAverage": 0.28,
+          "powerRating": 0.4,
+          "speedRating": 0.4,
+          "fieldingAverage": 0.95,
+          "salary": 2000000
+        },
+        {
+          "name": "Team B Player 7",
+          "gender": "M",
+          "position": "Infielder",
+          "battingAverage": 0.28,
+          "powerRating": 0.4,
+          "speedRating": 0.4,
+          "fieldingAverage": 0.95,
+          "salary": 2000000
+        },
+        {
+          "name": "Team B Player 8",
+          "gender": "M",
+          "position": "Outfielder",
+          "battingAverage": 0.28,
+          "powerRating": 0.4,
+          "speedRating": 0.4,
+          "fieldingAverage": 0.95,
+          "salary": 2000000
+        },
+        {
+          "name": "Team B Player 9",
+          "gender": "M",
+          "position": "Outfielder",
+          "battingAverage": 0.28,
+          "powerRating": 0.4,
+          "speedRating": 0.4,
+          "fieldingAverage": 0.95,
+          "salary": 2000000
+        }
+      ]
+    }
+  ],
+  "rules": {
+    "seasonLength": 162,
+    "gamesPerSeries": 3,
+    "inningsPerGame": 9,
+    "injuryRate": 0.02,
+    "fatigueThreshold": 5,
+    "startDate": "2026-05-03"
+  },
+  "probabilityTables": {
+    "batting": {
+      "rightVsRight": {
+        "strikeout": 0.15,
+        "walk": 0.1,
+        "single": 0.2,
+        "double": 0.05,
+        "triple": 0.01,
+        "homeRun": 0.04,
+        "fieldersChoice": 0.15,
+        "out": 0.3
+      },
+      "rightVsLeft": {
+        "strikeout": 0.15,
+        "walk": 0.1,
+        "single": 0.2,
+        "double": 0.05,
+        "triple": 0.01,
+        "homeRun": 0.04,
+        "fieldersChoice": 0.15,
+        "out": 0.3
+      },
+      "leftVsRight": {
+        "strikeout": 0.15,
+        "walk": 0.1,
+        "single": 0.2,
+        "double": 0.05,
+        "triple": 0.01,
+        "homeRun": 0.04,
+        "fieldersChoice": 0.15,
+        "out": 0.3
+      },
+      "leftVsLeft": {
+        "strikeout": 0.15,
+        "walk": 0.1,
+        "single": 0.2,
+        "double": 0.05,
+        "triple": 0.01,
+        "homeRun": 0.04,
+        "fieldersChoice": 0.15,
+        "out": 0.3
+      }
+    },
+    "pitching": {
+      "fastball": {
+        "strikeout": 0.15,
+        "walk": 0.1,
+        "single": 0.2,
+        "double": 0.05,
+        "triple": 0.01,
+        "homeRun": 0.04,
+        "fieldersChoice": 0.15,
+        "out": 0.3
+      },
+      "offspeed": {
+        "strikeout": 0.15,
+        "walk": 0.1,
+        "single": 0.2,
+        "double": 0.05,
+        "triple": 0.01,
+        "homeRun": 0.04,
+        "fieldersChoice": 0.15,
+        "out": 0.3
+      }
+    },
+    "fielding": {
+      "infielder": {
+        "out": 0.95,
+        "error": 0.05
+      },
+      "outfielder": {
+        "out": 0.95,
+        "error": 0.05
+      }
+    }
+  }
+}
