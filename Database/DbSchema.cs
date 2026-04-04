@@ -13,7 +13,8 @@ namespace BaseballCli.Database
             // Leagues table
             @"
             CREATE TABLE IF NOT EXISTS Leagues (
-                Id TEXT PRIMARY KEY,
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                Guid TEXT NOT NULL UNIQUE,
                 Name TEXT NOT NULL UNIQUE,
                 CreatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
             );
@@ -22,8 +23,9 @@ namespace BaseballCli.Database
             // Teams table
             @"
             CREATE TABLE IF NOT EXISTS Teams (
-                Id TEXT PRIMARY KEY,
-                LeagueId TEXT NOT NULL,
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                Guid TEXT NOT NULL UNIQUE,
+                LeagueId INTEGER NOT NULL,
                 Name TEXT NOT NULL,
                 City TEXT NOT NULL,
                 ManagerName TEXT NOT NULL,
@@ -36,8 +38,9 @@ namespace BaseballCli.Database
             // Players table (includes both batting and pitching stats baseline)
             @"
             CREATE TABLE IF NOT EXISTS Players (
-                Id TEXT PRIMARY KEY,
-                TeamId TEXT NOT NULL,
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                Guid TEXT NOT NULL UNIQUE,
+                TeamId INTEGER NOT NULL,
                 Name TEXT NOT NULL,
                 Gender TEXT NOT NULL,
                 Position TEXT NOT NULL,
@@ -57,10 +60,11 @@ namespace BaseballCli.Database
             // Games table
             @"
             CREATE TABLE IF NOT EXISTS Games (
-                Id TEXT PRIMARY KEY,
-                LeagueId TEXT NOT NULL,
-                HomeTeamId TEXT NOT NULL,
-                AwayTeamId TEXT NOT NULL,
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                Guid TEXT NOT NULL UNIQUE,
+                LeagueId INTEGER NOT NULL,
+                HomeTeamId INTEGER NOT NULL,
+                AwayTeamId INTEGER NOT NULL,
                 GameDate DATE NOT NULL,
                 Season INT NOT NULL,
                 HomeScore INT NOT NULL DEFAULT 0,
@@ -74,18 +78,19 @@ namespace BaseballCli.Database
             );
             ",
 
-            // Plays/Plays table (individual at-bats and events)
+            // Plays table (individual at-bats and events)
             @"
             CREATE TABLE IF NOT EXISTS Plays (
-                Id TEXT PRIMARY KEY,
-                GameId TEXT NOT NULL,
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                Guid TEXT NOT NULL UNIQUE,
+                GameId INTEGER NOT NULL,
                 Inning INT NOT NULL,
                 PlayNumber INT NOT NULL,
-                BatterId TEXT NOT NULL,
-                PitcherId TEXT NOT NULL,
+                BatterId INTEGER NOT NULL,
+                PitcherId INTEGER NOT NULL,
                 EventType TEXT NOT NULL,
                 Result TEXT NOT NULL,
-                BatterTeamId TEXT NOT NULL,
+                BatterTeamId INTEGER NOT NULL,
                 Outs INT DEFAULT 0,
                 RunnersOnBase TEXT,
                 CreatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -96,12 +101,13 @@ namespace BaseballCli.Database
             );
             ",
 
-            // Season Stats table (aggregated player stats per season)
+            // SeasonStats table (aggregated player stats per season)
             @"
             CREATE TABLE IF NOT EXISTS SeasonStats (
-                Id TEXT PRIMARY KEY,
-                PlayerId TEXT NOT NULL,
-                TeamId TEXT NOT NULL,
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                Guid TEXT NOT NULL UNIQUE,
+                PlayerId INTEGER NOT NULL,
+                TeamId INTEGER NOT NULL,
                 Season INT NOT NULL,
                 GamesPlayed INT DEFAULT 0,
                 AtBats INT DEFAULT 0,
@@ -114,15 +120,12 @@ namespace BaseballCli.Database
                 Strikeouts INT DEFAULT 0,
                 Walks INT DEFAULT 0,
                 StolenBases INT DEFAULT 0,
-                BattingAverage REAL DEFAULT 0.000,
-                OnBasePercentage REAL DEFAULT 0.000,
-                SlugsingPercentage REAL DEFAULT 0.000,
                 PitchingWins INT DEFAULT 0,
                 PitchingLosses INT DEFAULT 0,
                 GamesPitched INT DEFAULT 0,
                 Innings REAL DEFAULT 0.0,
-                Strikeouts_Pitching INT DEFAULT 0,
-                Walks_Pitching INT DEFAULT 0,
+                StrikeoutsPitching INT DEFAULT 0,
+                WalksPitching INT DEFAULT 0,
                 EarnedRuns INT DEFAULT 0,
                 UpdatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (PlayerId) REFERENCES Players(Id) ON DELETE CASCADE,
@@ -131,11 +134,12 @@ namespace BaseballCli.Database
             );
             ",
 
-            // Team Stats table (aggregated team stats per season)
+            // TeamStats table (aggregated team stats per season)
             @"
             CREATE TABLE IF NOT EXISTS TeamStats (
-                Id TEXT PRIMARY KEY,
-                TeamId TEXT NOT NULL,
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                Guid TEXT NOT NULL UNIQUE,
+                TeamId INTEGER NOT NULL,
                 Season INT NOT NULL,
                 Wins INT DEFAULT 0,
                 Losses INT DEFAULT 0,
@@ -147,7 +151,36 @@ namespace BaseballCli.Database
             );
             ",
 
-            // Create indexes for common queries
+            // Create indexes for common queries on GUID columns (for external API lookups)
+            @"
+            CREATE INDEX IF NOT EXISTS idx_leagues_guid ON Leagues(Guid);
+            ",
+
+            @"
+            CREATE INDEX IF NOT EXISTS idx_teams_guid ON Teams(Guid);
+            ",
+
+            @"
+            CREATE INDEX IF NOT EXISTS idx_players_guid ON Players(Guid);
+            ",
+
+            @"
+            CREATE INDEX IF NOT EXISTS idx_games_guid ON Games(Guid);
+            ",
+
+            @"
+            CREATE INDEX IF NOT EXISTS idx_plays_guid ON Plays(Guid);
+            ",
+
+            @"
+            CREATE INDEX IF NOT EXISTS idx_season_stats_guid ON SeasonStats(Guid);
+            ",
+
+            @"
+            CREATE INDEX IF NOT EXISTS idx_team_stats_guid ON TeamStats(Guid);
+            ",
+
+            // Create indexes for common queries on foreign keys
             @"
             CREATE INDEX IF NOT EXISTS idx_teams_league ON Teams(LeagueId);
             ",
