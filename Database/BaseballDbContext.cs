@@ -41,6 +41,12 @@ namespace BaseballCli.Database
             modelBuilder.Entity<League>()
                 .HasKey(l => l.Id);
             modelBuilder.Entity<League>()
+                .Property(l => l.Id)
+                .ValueGeneratedOnAdd();
+            modelBuilder.Entity<League>()
+                .HasIndex(l => l.Guid)
+                .IsUnique();
+            modelBuilder.Entity<League>()
                 .HasIndex(l => l.Name)
                 .IsUnique();
             modelBuilder.Entity<League>()
@@ -57,6 +63,12 @@ namespace BaseballCli.Database
             // Team configuration
             modelBuilder.Entity<Team>()
                 .HasKey(t => t.Id);
+            modelBuilder.Entity<Team>()
+                .Property(t => t.Id)
+                .ValueGeneratedOnAdd();
+            modelBuilder.Entity<Team>()
+                .HasIndex(t => t.Guid)
+                .IsUnique();
             modelBuilder.Entity<Team>()
                 .HasIndex(t => new { t.LeagueId, t.Name })
                 .IsUnique();
@@ -85,6 +97,12 @@ namespace BaseballCli.Database
             modelBuilder.Entity<Player>()
                 .HasKey(p => p.Id);
             modelBuilder.Entity<Player>()
+                .Property(p => p.Id)
+                .ValueGeneratedOnAdd();
+            modelBuilder.Entity<Player>()
+                .HasIndex(p => p.Guid)
+                .IsUnique();
+            modelBuilder.Entity<Player>()
                 .HasIndex(p => new { p.TeamId, p.Name })
                 .IsUnique();
             modelBuilder.Entity<Player>()
@@ -97,6 +115,12 @@ namespace BaseballCli.Database
             modelBuilder.Entity<Game>()
                 .HasKey(g => g.Id);
             modelBuilder.Entity<Game>()
+                .Property(g => g.Id)
+                .ValueGeneratedOnAdd();
+            modelBuilder.Entity<Game>()
+                .HasIndex(g => g.Guid)
+                .IsUnique();
+            modelBuilder.Entity<Game>()
                 .HasIndex(g => new { g.LeagueId, g.GameDate });
             modelBuilder.Entity<Game>()
                 .HasMany(g => g.Plays)
@@ -107,6 +131,12 @@ namespace BaseballCli.Database
             // Play configuration
             modelBuilder.Entity<Play>()
                 .HasKey(p => p.Id);
+            modelBuilder.Entity<Play>()
+                .Property(p => p.Id)
+                .ValueGeneratedOnAdd();
+            modelBuilder.Entity<Play>()
+                .HasIndex(p => p.Guid)
+                .IsUnique();
             modelBuilder.Entity<Play>()
                 .HasOne(p => p.Batter)
                 .WithMany()
@@ -127,12 +157,24 @@ namespace BaseballCli.Database
             modelBuilder.Entity<SeasonStats>()
                 .HasKey(s => s.Id);
             modelBuilder.Entity<SeasonStats>()
+                .Property(s => s.Id)
+                .ValueGeneratedOnAdd();
+            modelBuilder.Entity<SeasonStats>()
+                .HasIndex(s => s.Guid)
+                .IsUnique();
+            modelBuilder.Entity<SeasonStats>()
                 .HasIndex(s => new { s.PlayerId, s.Season })
                 .IsUnique();
 
             // TeamStats configuration
             modelBuilder.Entity<TeamStats>()
                 .HasKey(t => t.Id);
+            modelBuilder.Entity<TeamStats>()
+                .Property(t => t.Id)
+                .ValueGeneratedOnAdd();
+            modelBuilder.Entity<TeamStats>()
+                .HasIndex(t => t.Guid)
+                .IsUnique();
             modelBuilder.Entity<TeamStats>()
                 .HasIndex(t => new { t.TeamId, t.Season })
                 .IsUnique();
@@ -156,7 +198,7 @@ namespace BaseballCli.Database
         }
 
         // Query methods for various entities
-        public List<Game> GetGamesByLeague(string leagueId)
+        public List<Game> GetGamesByLeague(uint leagueId)
         {
             return Games
                 .Where(g => g.LeagueId == leagueId)
@@ -167,7 +209,7 @@ namespace BaseballCli.Database
                 .ToList();
         }
 
-        public List<Team> GetTeamsByLeague(string leagueId)
+        public List<Team> GetTeamsByLeague(uint leagueId)
         {
             return Teams
                 .Where(t => t.LeagueId == leagueId)
@@ -176,7 +218,7 @@ namespace BaseballCli.Database
                 .ToList();
         }
 
-        public List<Player> GetPlayersByTeam(string teamId)
+        public List<Player> GetPlayersByTeam(uint teamId)
         {
             return Players
                 .Where(p => p.TeamId == teamId)
@@ -184,7 +226,7 @@ namespace BaseballCli.Database
                 .ToList();
         }
 
-        public List<Play> GetPlaysByPlayer(string playerId)
+        public List<Play> GetPlaysByPlayer(uint playerId)
         {
             return Plays
                 .Where(p => p.BatterId == playerId || p.PitcherId == playerId)
@@ -215,7 +257,7 @@ namespace BaseballCli.Database
             _context.SaveChanges();
         }
 
-        public League? GetLeague(string leagueId)
+        public League? GetLeague(uint leagueId)
         {
             return _context.Leagues
                 .Include(l => l.Teams)
@@ -241,7 +283,7 @@ namespace BaseballCli.Database
             _context.SaveChanges();
         }
 
-        public Team? GetTeam(string teamId)
+        public Team? GetTeam(uint teamId)
         {
             return _context.Teams
                 .Include(t => t.Players)
@@ -249,7 +291,7 @@ namespace BaseballCli.Database
                 .FirstOrDefault(t => t.Id == teamId);
         }
 
-        public List<Team> GetTeamsByLeague(string leagueId)
+        public List<Team> GetTeamsByLeague(uint leagueId)
         {
             return _context.Teams
                 .Where(t => t.LeagueId == leagueId)
@@ -264,14 +306,14 @@ namespace BaseballCli.Database
             _context.SaveChanges();
         }
 
-        public Player? GetPlayer(string playerId)
+        public Player? GetPlayer(uint playerId)
         {
             return _context.Players
                 .Include(p => p.SeasonStats)
                 .FirstOrDefault(p => p.Id == playerId);
         }
 
-        public List<Player> GetPlayersByTeam(string teamId)
+        public List<Player> GetPlayersByTeam(uint teamId)
         {
             return _context.Players
                 .Where(p => p.TeamId == teamId)
@@ -285,7 +327,7 @@ namespace BaseballCli.Database
             _context.SaveChanges();
         }
 
-        public Game? GetGame(string gameId)
+        public Game? GetGame(uint gameId)
         {
             return _context.Games
                 .Include(g => g.Plays)
@@ -294,7 +336,7 @@ namespace BaseballCli.Database
                 .FirstOrDefault(g => g.Id == gameId);
         }
 
-        public List<Game> GetGamesByDate(DateTime date, string leagueId)
+        public List<Game> GetGamesByDate(DateTime date, uint leagueId)
         {
             return _context.Games
                 .Where(g => g.GameDate.Date == date.Date && g.LeagueId == leagueId)
@@ -303,7 +345,7 @@ namespace BaseballCli.Database
                 .ToList();
         }
 
-        public List<Game> GetGamesByTeamAndDateRange(string teamId, DateTime startDate, DateTime endDate)
+        public List<Game> GetGamesByTeamAndDateRange(uint teamId, DateTime startDate, DateTime endDate)
         {
             return _context.Games
                 .Where(g => (g.HomeTeamId == teamId || g.AwayTeamId == teamId) &&
@@ -321,7 +363,7 @@ namespace BaseballCli.Database
             _context.SaveChanges();
         }
 
-        public List<Play> GetPlaysByGame(string gameId)
+        public List<Play> GetPlaysByGame(uint gameId)
         {
             return _context.Plays
                 .Where(p => p.GameId == gameId)
@@ -352,7 +394,7 @@ namespace BaseballCli.Database
         /// <summary>
         /// Get existing season stats or create new if they don't exist.
         /// </summary>
-        public SeasonStats GetOrCreateSeasonStats(string playerId, string teamId, int season)
+        public SeasonStats GetOrCreateSeasonStats(uint playerId, uint teamId, int season)
         {
             var existing = GetSeasonStats(playerId, season);
             if (existing != null)
@@ -360,24 +402,24 @@ namespace BaseballCli.Database
 
             var stats = new SeasonStats
             {
-                Id = Guid.NewGuid().ToString(),
                 PlayerId = playerId,
                 TeamId = teamId,
                 Season = season,
-                UpdatedAt = DateTime.UtcNow
+                UpdatedAt = DateTime.UtcNow,
+                Guid = System.Guid.NewGuid().ToString()
             };
             _context.SeasonStats.Add(stats);
             _context.SaveChanges();
             return stats;
         }
 
-        public SeasonStats? GetSeasonStats(string playerId, int season)
+        public SeasonStats? GetSeasonStats(uint playerId, int season)
         {
             return _context.SeasonStats
                 .FirstOrDefault(s => s.PlayerId == playerId && s.Season == season);
         }
 
-        public List<SeasonStats> GetSeasonStatsByTeam(string teamId, int season)
+        public List<SeasonStats> GetSeasonStatsByTeam(uint teamId, int season)
         {
             return _context.SeasonStats
                 .Where(s => s.TeamId == teamId && s.Season == season)
@@ -404,13 +446,13 @@ namespace BaseballCli.Database
             _context.SaveChanges();
         }
 
-        public TeamStats? GetTeamStats(string teamId, int season)
+        public TeamStats? GetTeamStats(uint teamId, int season)
         {
             return _context.TeamStats
                 .FirstOrDefault(s => s.TeamId == teamId && s.Season == season);
         }
 
-        public List<TeamStats> GetLeagueStandings(string leagueId, int season)
+        public List<TeamStats> GetLeagueStandings(uint leagueId, int season)
         {
             var teamIds = _context.Teams
                 .Where(t => t.LeagueId == leagueId)
@@ -426,10 +468,10 @@ namespace BaseballCli.Database
                 .ToList();
         }
 
-        public List<Game> GetGamesByLeague(string leagueId)
+        public List<Game> GetGamesByLeague(uint leagueId)
         {
             return _context.Games
-                .Where(g => g.Id == leagueId)
+                .Where(g => g.LeagueId == leagueId)
                 .Include(g => g.HomeTeam)
                 .Include(g => g.AwayTeam)
                 .Include(g => g.Plays)
@@ -437,7 +479,7 @@ namespace BaseballCli.Database
                 .ToList();
         }
 
-        public List<Play> GetPlaysByPlayer(string playerId)
+        public List<Play> GetPlaysByPlayer(uint playerId)
         {
             return _context.Plays
                 .Where(p => p.BatterId == playerId || p.PitcherId == playerId)
@@ -453,7 +495,7 @@ namespace BaseballCli.Database
             return _context.Players.FirstOrDefault(p => p.Name == name);
         }
 
-        public List<Game> GetGamesByTeam(string teamId)
+        public List<Game> GetGamesByTeam(uint teamId)
         {
             return _context.Games
                 .Where(g => g.HomeTeamId == teamId || g.AwayTeamId == teamId)
@@ -476,25 +518,27 @@ namespace BaseballCli.Database
             // Create league
             var league = new League
             {
-                Id = Guid.NewGuid().ToString(),
+                Guid = System.Guid.NewGuid().ToString(),
                 Name = config.League.Name,
                 CreatedAt = DateTime.UtcNow
             };
             _context.Leagues.Add(league);
+            _context.SaveChanges();
 
             // Create teams and players
             foreach (var teamConfig in config.Teams)
             {
                 var team = new Team
                 {
-                    Id = Guid.NewGuid().ToString(),
                     LeagueId = league.Id,
+                    Guid = System.Guid.NewGuid().ToString(),
                     Name = teamConfig.Name,
                     City = teamConfig.City,
                     ManagerName = teamConfig.Manager,
                     CreatedAt = DateTime.UtcNow
                 };
                 _context.Teams.Add(team);
+                _context.SaveChanges();
 
                 // Add players to team
                 if (teamConfig.Players != null)
@@ -503,8 +547,8 @@ namespace BaseballCli.Database
                     {
                         var player = new Player
                         {
-                            Id = Guid.NewGuid().ToString(),
                             TeamId = team.Id,
+                            Guid = System.Guid.NewGuid().ToString(),
                             Name = playerConfig.Name,
                             Gender = playerConfig.Gender,
                             Position = playerConfig.Position,
@@ -520,9 +564,8 @@ namespace BaseballCli.Database
                         _context.Players.Add(player);
                     }
                 }
+                _context.SaveChanges();
             }
-
-            _context.SaveChanges();
         }
     }
 }

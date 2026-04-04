@@ -5,7 +5,12 @@ namespace BaseballCli.Models
 {
     public class League
     {
-        public string Id { get; set; } = null!;
+        // Auto-increment primary key (internal use)
+        public uint Id { get; set; }
+        
+        // External GUID identifier (unique)
+        public string Guid { get; set; } = null!;
+        
         public string Name { get; set; } = null!;
         public DateTime CreatedAt { get; set; }
         
@@ -15,8 +20,13 @@ namespace BaseballCli.Models
 
     public class Team
     {
-        public string Id { get; set; } = null!;
-        public string LeagueId { get; set; } = null!;
+        // Auto-increment primary key (internal use)
+        public uint Id { get; set; }
+        
+        // External GUID identifier (unique)
+        public string Guid { get; set; } = null!;
+        
+        public uint LeagueId { get; set; }
         public string Name { get; set; } = null!;
         public string City { get; set; } = null!;
         public string ManagerName { get; set; } = null!;
@@ -31,8 +41,13 @@ namespace BaseballCli.Models
 
     public class Player
     {
-        public string Id { get; set; } = null!;
-        public string TeamId { get; set; } = null!;
+        // Auto-increment primary key (internal use)
+        public uint Id { get; set; }
+        
+        // External GUID identifier (unique)
+        public string Guid { get; set; } = null!;
+        
+        public uint TeamId { get; set; }
         public string Name { get; set; } = null!;
         public string Gender { get; set; } = null!; // "M" or "F"
         public string Position { get; set; } = null!; // "Pitcher", "Catcher", "Infielder", "Outfielder"
@@ -88,10 +103,15 @@ namespace BaseballCli.Models
 
     public class Game
     {
-        public string Id { get; set; } = null!;
-        public string LeagueId { get; set; } = null!;
-        public string HomeTeamId { get; set; } = null!;
-        public string AwayTeamId { get; set; } = null!;
+        // Auto-increment primary key (internal use)
+        public uint Id { get; set; }
+        
+        // External GUID identifier (unique)
+        public string Guid { get; set; } = null!;
+        
+        public uint LeagueId { get; set; }
+        public uint HomeTeamId { get; set; }
+        public uint AwayTeamId { get; set; }
         public DateTime GameDate { get; set; }
         public int Season { get; set; }
         
@@ -119,14 +139,19 @@ namespace BaseballCli.Models
 
     public class Play
     {
-        public string Id { get; set; } = null!;
-        public string GameId { get; set; } = null!;
+        // Auto-increment primary key (internal use)
+        public uint Id { get; set; }
+        
+        // External GUID identifier (unique)
+        public string Guid { get; set; } = null!;
+        
+        public uint GameId { get; set; }
         public int Inning { get; set; }
         public int PlayNumber { get; set; }
         
-        public string BatterId { get; set; } = null!;
-        public string PitcherId { get; set; } = null!;
-        public string BatterTeamId { get; set; } = null!;
+        public uint BatterId { get; set; }
+        public uint PitcherId { get; set; }
+        public uint BatterTeamId { get; set; }
         
         public string EventType { get; set; } = null!; // "AtBat", "Walk", "Error", etc.
         public string Result { get; set; } = null!; // "Single", "Double", "HomeRun", "Strikeout", "Out", etc.
@@ -144,9 +169,14 @@ namespace BaseballCli.Models
 
     public class SeasonStats
     {
-        public string Id { get; set; } = null!;
-        public string PlayerId { get; set; } = null!;
-        public string TeamId { get; set; } = null!;
+        // Auto-increment primary key (internal use)
+        public uint Id { get; set; }
+        
+        // External GUID identifier (unique)
+        public string Guid { get; set; } = null!;
+        
+        public uint PlayerId { get; set; }
+        public uint TeamId { get; set; }
         public int Season { get; set; }
 
         // Batting stats
@@ -196,8 +226,13 @@ namespace BaseballCli.Models
 
     public class TeamStats
     {
-        public string Id { get; set; } = null!;
-        public string TeamId { get; set; } = null!;
+        // Auto-increment primary key (internal use)
+        public uint Id { get; set; }
+        
+        // External GUID identifier (unique)
+        public string Guid { get; set; } = null!;
+        
+        public uint TeamId { get; set; }
         public int Season { get; set; }
 
         public int Wins { get; set; }
