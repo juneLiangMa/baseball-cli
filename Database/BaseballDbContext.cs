@@ -349,6 +349,28 @@ namespace BaseballCli.Database
             _context.SaveChanges();
         }
 
+        /// <summary>
+        /// Get existing season stats or create new if they don't exist.
+        /// </summary>
+        public SeasonStats GetOrCreateSeasonStats(string playerId, string teamId, int season)
+        {
+            var existing = GetSeasonStats(playerId, season);
+            if (existing != null)
+                return existing;
+
+            var stats = new SeasonStats
+            {
+                Id = Guid.NewGuid().ToString(),
+                PlayerId = playerId,
+                TeamId = teamId,
+                Season = season,
+                UpdatedAt = DateTime.UtcNow
+            };
+            _context.SeasonStats.Add(stats);
+            _context.SaveChanges();
+            return stats;
+        }
+
         public SeasonStats? GetSeasonStats(string playerId, int season)
         {
             return _context.SeasonStats
