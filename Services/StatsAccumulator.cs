@@ -22,7 +22,7 @@ namespace BaseballCli.Services
         /// <summary>
         /// Record an at-bat result for a batter.
         /// </summary>
-        public void RecordAtBat(string playerId, string teamId, int season, PlayResultType resultType, int runsScored = 0)
+        public void RecordAtBat(uint playerId, uint teamId, int season, PlayResultType resultType, int runsScored = 0)
         {
             var stats = _repository.GetOrCreateSeasonStats(playerId, teamId, season);
 
@@ -68,7 +68,7 @@ namespace BaseballCli.Services
         /// <summary>
         /// Record RBIs for a batter.
         /// </summary>
-        public void RecordRBI(string playerId, string teamId, int season, int rbiCount)
+        public void RecordRBI(uint playerId, uint teamId, int season, int rbiCount)
         {
             if (rbiCount <= 0)
                 return;
@@ -82,7 +82,7 @@ namespace BaseballCli.Services
         /// <summary>
         /// Record a run scored for a player.
         /// </summary>
-        public void RecordRun(string playerId, string teamId, int season)
+        public void RecordRun(uint playerId, uint teamId, int season)
         {
             var stats = _repository.GetOrCreateSeasonStats(playerId, teamId, season);
             stats.Runs++;
@@ -93,7 +93,7 @@ namespace BaseballCli.Services
         /// <summary>
         /// Record stolen bases.
         /// </summary>
-        public void RecordStolenBase(string playerId, string teamId, int season, int baseCount = 1)
+        public void RecordStolenBase(uint playerId, uint teamId, int season, int baseCount = 1)
         {
             var stats = _repository.GetOrCreateSeasonStats(playerId, teamId, season);
             stats.StolenBases += baseCount;
@@ -105,8 +105,8 @@ namespace BaseballCli.Services
         /// Record pitching statistics for an inning or game.
         /// </summary>
         public void RecordPitchingStats(
-            string pitcherId,
-            string teamId,
+            uint pitcherId,
+            uint teamId,
             int season,
             double inningsPitched,
             int strikeouts,
@@ -127,7 +127,7 @@ namespace BaseballCli.Services
         /// <summary>
         /// Record a win or loss for a pitcher.
         /// </summary>
-        public void RecordPitcherDecision(string pitcherId, string teamId, int season, bool isWin)
+        public void RecordPitcherDecision(uint pitcherId, uint teamId, int season, bool isWin)
         {
             var stats = _repository.GetOrCreateSeasonStats(pitcherId, teamId, season);
             if (isWin)
@@ -141,7 +141,7 @@ namespace BaseballCli.Services
         /// <summary>
         /// Record a strikeout for a pitcher.
         /// </summary>
-        public void RecordPitcherStrikeout(string pitcherId, string teamId, int season)
+        public void RecordPitcherStrikeout(uint pitcherId, uint teamId, int season)
         {
             var stats = _repository.GetOrCreateSeasonStats(pitcherId, teamId, season);
             stats.StrikeoutsPitching++;
@@ -152,7 +152,7 @@ namespace BaseballCli.Services
         /// <summary>
         /// Record a walk allowed by a pitcher.
         /// </summary>
-        public void RecordPitcherWalk(string pitcherId, string teamId, int season)
+        public void RecordPitcherWalk(uint pitcherId, uint teamId, int season)
         {
             var stats = _repository.GetOrCreateSeasonStats(pitcherId, teamId, season);
             stats.WalksPitching++;
@@ -164,7 +164,7 @@ namespace BaseballCli.Services
         /// Initialize season stats for all players on a team.
         /// Call this at the start of a season.
         /// </summary>
-        public void InitializeTeamSeasonStats(string teamId, int season)
+        public void InitializeTeamSeasonStats(uint teamId, int season)
         {
             var players = _repository.GetPlayersByTeam(teamId);
             foreach (var player in players)
@@ -177,7 +177,7 @@ namespace BaseballCli.Services
         /// Initialize season stats for all players in a league.
         /// Call this at the start of a season.
         /// </summary>
-        public void InitializeLeagueSeasonStats(string leagueId, int season)
+        public void InitializeLeagueSeasonStats(uint leagueId, int season)
         {
             var teams = _repository.GetTeamsByLeague(leagueId);
             foreach (var team in teams)
@@ -190,22 +190,22 @@ namespace BaseballCli.Services
         /// Update game played count and other game-level stats for participating teams.
         /// Call this after each game is completed.
         /// </summary>
-        public void UpdateGameStats(Game game, string winningPitcherId = null, string losingPitcherId = null)
+        public void UpdateGameStats(Game game, uint? winningPitcherId = null, uint? losingPitcherId = null)
         {
             if (game == null)
                 throw new ArgumentNullException(nameof(game));
 
             // Record wins/losses for pitchers
-            if (!string.IsNullOrEmpty(winningPitcherId))
+            if (winningPitcherId.HasValue)
             {
-                var winningPitcher = _repository.GetPlayer(winningPitcherId);
-                RecordPitcherDecision(winningPitcherId, winningPitcher.TeamId, game.Season, isWin: true);
+                var winningPitcher = _repository.GetPlayer(winningPitcherId.Value);
+                RecordPitcherDecision(winningPitcherId.Value, winningPitcher.TeamId, game.Season, isWin: true);
             }
 
-            if (!string.IsNullOrEmpty(losingPitcherId))
+            if (losingPitcherId.HasValue)
             {
-                var losingPitcher = _repository.GetPlayer(losingPitcherId);
-                RecordPitcherDecision(losingPitcherId, losingPitcher.TeamId, game.Season, isWin: false);
+                var losingPitcher = _repository.GetPlayer(losingPitcherId.Value);
+                RecordPitcherDecision(losingPitcherId.Value, losingPitcher.TeamId, game.Season, isWin: false);
             }
 
             // Record games played for all players
@@ -216,7 +216,7 @@ namespace BaseballCli.Services
         /// <summary>
         /// Increment games played for all players on a team for a given season.
         /// </summary>
-        private void UpdateTeamGameStats(string teamId, int season)
+        private void UpdateTeamGameStats(uint teamId, int season)
         {
             var players = _repository.GetPlayersByTeam(teamId);
             foreach (var player in players)
@@ -231,7 +231,7 @@ namespace BaseballCli.Services
         /// <summary>
         /// Get a player's season statistics.
         /// </summary>
-        public SeasonStats? GetPlayerSeasonStats(string playerId, int season)
+        public SeasonStats? GetPlayerSeasonStats(uint playerId, int season)
         {
             return _repository.GetSeasonStats(playerId, season);
         }
@@ -239,7 +239,7 @@ namespace BaseballCli.Services
         /// <summary>
         /// Get all season statistics for a player across all seasons.
         /// </summary>
-        public List<SeasonStats> GetPlayerCareerStats(string playerId)
+        public List<SeasonStats> GetPlayerCareerStats(uint playerId)
         {
             var player = _repository.GetPlayer(playerId);
             return player?.SeasonStats.OrderByDescending(s => s.Season).ToList() ?? new List<SeasonStats>();
@@ -248,7 +248,7 @@ namespace BaseballCli.Services
         /// <summary>
         /// Get league leaders for a specific stat category.
         /// </summary>
-        public List<SeasonStats> GetLeagueLeaders(string leagueId, int season, string statCategory, int limit = 10)
+        public List<SeasonStats> GetLeagueLeaders(uint leagueId, int season, string statCategory, int limit = 10)
         {
             var teams = _repository.GetTeamsByLeague(leagueId);
             var allTeamStats = new List<SeasonStats>();

@@ -104,8 +104,8 @@ namespace BaseballCli.Services
             ref int playNumber,
             int dayOfSeason,
             string weather,
-            string battingTeamId,
-            string pitchingTeamId)
+            uint battingTeamId,
+            uint pitchingTeamId)
         {
             var result = new HalfInningResult { Plays = new List<PlayEvent>(), RunsScored = 0 };
 

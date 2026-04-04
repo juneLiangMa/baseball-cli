@@ -67,7 +67,7 @@ namespace BaseballCli.Services
             _currentState = new SimulationState
             {
                 LeagueName = league.Name,
-                LeagueId = league.Id,
+                LeagueId = league.Id.ToString(),
                 CurrentDate = seasonStart,
                 SeasonStart = seasonStart,
                 SeasonEnd = seasonEnd,

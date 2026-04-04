@@ -53,7 +53,6 @@ namespace BaseballCli.Services
 
                             var game = new Game
                             {
-                                Id = $"{league.Id}-S{season}-G{gameNum + 1}",
                                 LeagueId = league.Id,
                                 HomeTeamId = teams[i].Id,
                                 AwayTeamId = teams[j].Id,
@@ -72,7 +71,6 @@ namespace BaseballCli.Services
                             // Away series
                             var awayGame = new Game
                             {
-                                Id = $"{league.Id}-S{season}-G{gameNum + 1}",
                                 LeagueId = league.Id,
                                 HomeTeamId = teams[j].Id,
                                 AwayTeamId = teams[i].Id,
@@ -110,7 +108,7 @@ namespace BaseballCli.Services
         {
             var result = new SeasonSimulationResult
             {
-                SeasonId = league.Id,
+                SeasonId = league.Id.ToString(),
                 GamesSimulated = new List<GameResult>()
             };
 
@@ -126,7 +124,6 @@ namespace BaseballCli.Services
                 {
                     teamStats = new TeamStats
                     {
-                        Id = $"TS-{team.Id}-{season}",
                         TeamId = team.Id,
                         Season = season,
                         Wins = 0,
@@ -144,7 +141,6 @@ namespace BaseballCli.Services
                     {
                         playerStats = new SeasonStats
                         {
-                            Id = $"SS-{player.Id}-{season}",
                             PlayerId = player.Id,
                             TeamId = team.Id,
                             Season = season,
@@ -188,12 +184,11 @@ namespace BaseballCli.Services
                 {
                     var playEntity = new Play
                     {
-                        Id = $"P-{game.Id}-{play.PlayNumber}",
                         GameId = game.Id,
                         Inning = play.Inning,
                         PlayNumber = play.PlayNumber,
-                        BatterId = play.AtBatResult?.Batter.Id ?? "",
-                        PitcherId = play.AtBatResult?.Pitcher.Id ?? "",
+                        BatterId = play.AtBatResult?.Batter.Id ?? 0,
+                        PitcherId = play.AtBatResult?.Pitcher.Id ?? 0,
                         BatterTeamId = play.AtBatResult?.Context.IsHomeTeam ?? false ? game.HomeTeamId : game.AwayTeamId,
                         EventType = play.AtBatResult?.EventType ?? "Unknown",
                         Result = play.AtBatResult?.Result ?? "Unknown",
@@ -208,7 +203,7 @@ namespace BaseballCli.Services
             return result;
         }
 
-        private void UpdateTeamStats(string homeTeamId, string awayTeamId, int homeScore, int awayScore, int season)
+        private void UpdateTeamStats(uint homeTeamId, uint awayTeamId, int homeScore, int awayScore, int season)
         {
             var homeStats = _repository.GetTeamStats(homeTeamId, season);
             var awayStats = _repository.GetTeamStats(awayTeamId, season);
@@ -238,7 +233,7 @@ namespace BaseballCli.Services
 
         private void UpdatePlayerStats(Team homeTeam, Team awayTeam, List<PlayEvent> plays, int season)
         {
-            var playerPlayCounts = new Dictionary<string, int>();
+            var playerPlayCounts = new Dictionary<uint, int>();
 
             foreach (var play in plays)
             {
@@ -266,7 +261,7 @@ namespace BaseballCli.Services
         /// <summary>
         /// Gets current standings for the season.
         /// </summary>
-        public List<TeamStats> GetStandings(string leagueId, int season)
+        public List<TeamStats> GetStandings(uint leagueId, int season)
         {
             return _repository.GetLeagueStandings(leagueId, season);
         }
@@ -274,7 +269,7 @@ namespace BaseballCli.Services
         /// <summary>
         /// Gets leader stats for the season (batting average, home runs, etc.).
         /// </summary>
-        public SeasonLeaders GetSeasonLeaders(string leagueId, int season, List<Team> teams)
+        public SeasonLeaders GetSeasonLeaders(uint leagueId, int season, List<Team> teams)
         {
             var leaders = new SeasonLeaders();
             var allStats = new List<SeasonStats>();
